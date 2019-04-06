@@ -105,7 +105,7 @@ function init()
 	clk.on_select_internal = function() clk:start() end
 	clk.on_select_external = reset_pattern
 	clk:add_clock_params()
-	params:set("bpm", 60)
+	params:set("bpm", 120)
 
 	notes_off_metro.event = all_notes_off
 	
@@ -204,7 +204,7 @@ function init()
     action = function(x) engine.gain(x) end
 	}
 
-	--params:bang()
+	params:default()
 	params:add_separator()
 
 	-- grid
