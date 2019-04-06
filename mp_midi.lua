@@ -12,6 +12,10 @@
 
 engine.name = "PolyPerc"
 
+hs = include("awake/lib/halfsecond")
+
+local data_dir = "/home/we/dust/code/meadowphysics/data/"
+
 local shift = 0
 
 local MeadowPhysics = require "meadowphysics/lib/meadowphysics"
@@ -89,11 +93,11 @@ local screen_clk
 
 function init()
 	-- meadowphysics
-	mp = MeadowPhysics.loadornew("meadowphysics/data/mp.data") 
+	mp = MeadowPhysics.loadornew(data_dir .. "mp.data") 
 	mp.mp_event = event 
 	
 	-- gridscales
-	gridscales = GridScales.loadornew("meadowphysics/data/gridscales.data")
+	gridscales = GridScales.loadornew(data_dir .. "gridscales.data")
 	gridscales:add_params()
 
 	-- metro / midi
@@ -213,6 +217,8 @@ function init()
 	screen_clk:start()
 	grid_clk:start()
 	clk:start()
+
+  hs.init()
 end
 
 function event(row, state)
@@ -319,9 +325,9 @@ function key(n, z)
 		shift = shift ~ 1
 	elseif n == 3 and z == 1 then
 		if shift == 1 then
-			gridscales:save("meadowphysics/data/gridscales.data")
+			gridscales:save(data_dir .. "gridscales.data")
 		else
-			mp:save("meadowphysics/data/mp.data")
+			mp:save(data_dir .. "mp.data")
 		end
 	end
 end
