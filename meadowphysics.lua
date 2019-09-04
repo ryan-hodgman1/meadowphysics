@@ -236,7 +236,7 @@ function draw_gridscales() gridscales:redraw() end
 
 function draw_mp()
     screen.clear()
-    screen.aa(1)
+    screen.aa(0)
     local offset_x = 24
     local offset_y = 16
     -- Draw Grid representation
