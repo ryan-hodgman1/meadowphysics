@@ -241,38 +241,38 @@ end
 
 function draw_mp()
 	screen.clear()
-	screen.aa(1)
+	screen.aa(0)
 
 	for i=1,8 do
 		if mp.position[i] >= 1 then
-			local y = (i-1)*8
+			local y = (i-1)*4
 			local x = 0
 
-			x = (mp.position[i]-1)*8
+			x = (mp.position[i]-1)*4
 			screen.level(15)
 			screen.move(x, y)
-			screen.rect(x, y, 8, 8)
+			screen.rect(x, y, 2, 2)
 			screen.fill()
 			screen.stroke()
 		end
 	end
 
-	screen.level(4)
-	for i=0,8 do
-		local y = i*8
-		screen.move(0,y)
-		screen.line(128,y)
-		screen.stroke()
-		screen.close()
-	end
+-- 	screen.level(4)
+-- 	for i=0,8 do
+-- 		local y = i*8
+-- 		screen.move(0,y)
+-- 		screen.line(128,y)
+-- 		screen.stroke()
+-- 		screen.close()
+-- 	end
 
-	for i=0,16 do
-		local x = i*8
-		screen.move(x, 0)
-		screen.line(x, 64)
-		screen.stroke()
-		screen.close()
-	end
+-- 	for i=0,16 do
+-- 		local x = i*2
+-- 		screen.move(x, 0)
+-- 		screen.line(x, 64)
+-- 		screen.stroke()
+-- 		screen.close()
+-- 	end
 
 	screen.update()
 end
