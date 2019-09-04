@@ -18,7 +18,7 @@ local data_dir = "/home/we/dust/code/meadowphysics/data/"
 
 local shift = 0
 
-local MeadowPhysics = require "meadowphysics/lib/meadowphysics"
+local MeadowPhysics = require "meadowphysics/lib/mp"
 local mp
 
 local GridScales = require "meadowphysics/lib/gridscales"
