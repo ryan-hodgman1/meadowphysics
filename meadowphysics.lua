@@ -18,30 +18,59 @@ local GridScales = require "meadowphysics/lib/gridscales"
 local MusicUtil = require "musicutil"
 local BeatClock = require "beatclock"
 
+local active
+local grid_clk
+local screen_clk
+local mp
 local data_dir = "/home/we/dust/code/meadowphysics/data/"
 local shift = 0
-local mp
 local gridscales
 local g = grid.connect()
 local midi_out_device
 local midi_out_channel
 local clk = BeatClock.new()
-local clk_midi = midi.connect()
+local notes = {}
 
 local options = {
-  OUTPUT = {"audio", "midi", "audio + midi"},
-  STEP_LENGTH_NAMES = {
-    "1 bar", "1/2", "1/3", "1/4", "1/6", "1/8", "1/12", "1/16", "1/24", "1/32", "1/48", "1/64"
+  OUTPUT = {
+    "audio",
+    "midi",
+    "audio + midi"
   },
-  STEP_LENGTH_DIVIDERS = {1, 2, 3, 4, 6, 8, 12, 16, 24, 32, 48, 64}
+  STEP_LENGTH_NAMES = {
+    "1 bar",
+    "1/2",
+    "1/3",
+    "1/4",
+    "1/6",
+    "1/8",
+    "1/12",
+    "1/16",
+    "1/24",
+    "1/32",
+    "1/48",
+    "1/64"
+  },
+  STEP_LENGTH_DIVIDERS = {
+    1,
+    2,
+    3,
+    4,
+    6,
+    8,
+    12,
+    16,
+    24,
+    32,
+    48,
+    64
+  }
 }
 
-local notes = {}
-local active
-local grid_clk
-local screen_clk
-
-clk_midi.event = function(data) clk:process_midi(data) end
+local clk_midi = midi.connect()
+clk_midi.event = function(data)
+  clk:process_midi(data)
+end
 
 local notes_off_metro = metro.init()
 
@@ -69,7 +98,7 @@ local function step()
       table.insert(active_notes, n)
     end
   end
-  notes = {}
+  notes = {} --why?
 
   if params:get("note_length") < 4 then
     notes_off_metro:start((60 / clk.bpm / clk.steps_per_beat / 4) *
@@ -86,6 +115,8 @@ local function reset_pattern()
 end
 
 function init()
+  setup_params()
+
   -- meadowphysics
   mp = MeadowPhysics.loadornew(data_dir .. "mp.data")
   mp.mp_event = event
@@ -93,73 +124,6 @@ function init()
   -- gridscales
   gridscales = GridScales.loadornew(data_dir .. "gridscales.data")
   gridscales:add_params()
-
-  -- metro / midi
-  midi_out_device = midi.connect(1)
-  midi_out_device.event = function() end
-
-  clk.on_step = step
-  clk.on_stop = stop
-  clk.on_select_internal = function() clk:start() end
-  clk.on_select_external = reset_pattern
-  clk:add_clock_params()
-  params:set("bpm", 120)
-
-  notes_off_metro.event = all_notes_off
-
-  params:add{
-    type = "option",
-    id = "output",
-    name = "output",
-    options = options.OUTPUT,
-    action = all_notes_off
-  }
-
-  params:add{
-    type = "number",
-    id = "midi_out_device",
-    name = "midi out device",
-    min = 1,
-    max = 4,
-    default = 1,
-    action = function(value) midi_out_device = midi.connect(value) end
-  }
-
-  params:add{
-    type = "number",
-    id = "midi_out_channel",
-    name = "midi out channel",
-    min = 1,
-    max = 16,
-    default = 1,
-    action = function(value)
-      all_notes_off()
-      midi_out_channel = value
-    end
-  }
-
-  params:add_separator()
-
-  params:add{
-    type = "option",
-    id = "step_length",
-    name = "step length",
-    options = options.STEP_LENGTH_NAMES,
-    default = 4,
-    action = function(value)
-      clk.ticks_per_step = 96 / options.STEP_LENGTH_DIVIDERS[value]
-      clk.steps_per_beat = options.STEP_LENGTH_DIVIDERS[value] / 4
-      clk:bpm_change(clk.bpm)
-    end
-  }
-
-  params:add{
-    type = "option",
-    id = "note_length",
-    name = "note length",
-    options = {"25%", "50%", "75%", "100%"},
-    default = 4
-  }
 
   -- metro
   grid_clk = metro.init()
@@ -170,44 +134,17 @@ function init()
   screen_clk.event = function() redraw() end
   screen_clk.time = 1 / 15
 
-  -- engine
-  params:add{
-    type = "control",
-    id = "amp",
-    controlspec = controlspec.new(0, 1, 'lin', 0, 0.5, ''),
-    action = function(x) engine.amp(x) end
-  }
+  midi_out_device = midi.connect(1)
+  -- midi_out_device.event = function() end
 
-  params:add{
-    type = "control",
-    id = "pw",
-    controlspec = controlspec.new(0, 100, 'lin', 0, 50, '%'),
-    action = function(x) engine.pw(x / 100) end
-  }
+  clk.on_step = step
+  clk.on_stop = stop
+  clk.on_select_internal = function() clk:start() end
+  clk.on_select_external = reset_pattern
+  clk:add_clock_params()
+  params:set("bpm", 120)
 
-  params:add{
-    type = "control",
-    id = "release",
-    controlspec = controlspec.new(0.1, 3.2, 'lin', 0, 1.2, 's'),
-    action = function(x) engine.release(x) end
-  }
-
-  params:add{
-    type = "control",
-    id = "cutoff",
-    controlspec = controlspec.new(50, 5000, 'exp', 0, 555, 'hz'),
-    action = function(x) engine.cutoff(x) end
-  }
-
-  params:add{
-    type = "control",
-    id = "gain",
-    controlspec = controlspec.new(0, 4, 'lin', 0, 1, ''),
-    action = function(x) engine.gain(x) end
-  }
-
-  params:default()
-  params:add_separator()
+  notes_off_metro.event = all_notes_off
 
   -- grid
   if g then mp:gridredraw(g) end
@@ -248,7 +185,6 @@ function draw_mp()
     if mp.position[i] >= 1 then
       local y = ((i - 1) * 4) + offset_y
       local x = 0
-
       x = ((mp.position[i] - 1) * 4) + offset_x
       screen.level(8)
       screen.move(x, y)
@@ -310,4 +246,100 @@ function key(n, z)
       mp:save(data_dir .. "mp.data")
     end
   end
+end
+
+function setup_params()
+  params:add{
+    type = "option",
+    id = "output",
+    name = "output",
+    options = options.OUTPUT,
+    action = all_notes_off
+  }
+
+  params:add{
+    type = "number",
+    id = "midi_out_device",
+    name = "midi out device",
+    min = 1,
+    max = 4,
+    default = 1,
+    action = function(value) midi_out_device = midi.connect(value) end
+  }
+
+  params:add{
+    type = "number",
+    id = "midi_out_channel",
+    name = "midi out channel",
+    min = 1,
+    max = 16,
+    default = 1,
+    action = function(value)
+      all_notes_off()
+      midi_out_channel = value
+    end
+  }
+
+  params:add_separator()
+
+  params:add{
+    type = "option",
+    id = "step_length",
+    name = "step length",
+    options = options.STEP_LENGTH_NAMES,
+    default = 4,
+    action = function(value)
+      clk.ticks_per_step = 96 / options.STEP_LENGTH_DIVIDERS[value]
+      clk.steps_per_beat = options.STEP_LENGTH_DIVIDERS[value] / 4
+      clk:bpm_change(clk.bpm)
+    end
+  }
+
+  params:add{
+    type = "option",
+    id = "note_length",
+    name = "note length",
+    options = {"25%", "50%", "75%", "100%"},
+    default = 4
+  }
+
+  -- engine
+  params:add{
+    type = "control",
+    id = "amp",
+    controlspec = controlspec.new(0, 1, 'lin', 0, 0.5, ''),
+    action = engine.amp
+  }
+
+  params:add{
+    type = "control",
+    id = "pw",
+    controlspec = controlspec.new(0, 100, 'lin', 0, 50, '%'),
+    action = function(x) engine.pw(x / 100) end
+  }
+
+  params:add{
+    type = "control",
+    id = "release",
+    controlspec = controlspec.new(0.1, 3.2, 'lin', 0, 1.2, 's'),
+    action = engine.release
+  }
+
+  params:add{
+    type = "control",
+    id = "cutoff",
+    controlspec = controlspec.new(50, 5000, 'exp', 0, 555, 'hz'),
+    action = engine.cutoff
+  }
+
+  params:add{
+    type = "control",
+    id = "gain",
+    controlspec = controlspec.new(0, 4, 'lin', 0, 1, ''),
+    action = engine.gain
+  }
+
+  params:default()
+  params:add_separator()
+
 end
