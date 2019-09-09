@@ -4,6 +4,7 @@ local tabutil = require "tabutil"
 local mp = {}
 mp.__index = mp
 
+-- Symbols to render in the grid leds
 mp.SIGN = {{0,0,0,0,0,0,0,0},-- o
 {0,24,24,126,126,24,24,0}, -- +
 {0,0,0,126,126,0,0,0}, -- -
@@ -25,7 +26,7 @@ local gridbuf = require "gridbuf"
 local gbuf = gridbuf.new(16, 8)
 
 function mp.new()
-	local m = {}
+	local m = {} -- meadowphysics state
 	setmetatable(m, mp)
 	m.edit_row = 0
 	m.key_count = 0
@@ -53,6 +54,7 @@ function mp.new()
 	m.smin = {}
 	m.smax = {}
 
+	-- initial values per voice
 	for i=1,8 do
 		m.count[i] = 8+i
 		m.position[i] = 8+i
@@ -62,7 +64,7 @@ function mp.new()
 		m.min[i] = 8+i
 		m.trigger[i] = (1 << i)
 		m.toggle[i] = 0
-		m.rules[i] = 2 -- inc
+		m.rules[i] = 2 -- Default value is INC
 		m.rule_dests[i] = i
 		m.sync[i] = (1 << i)
 		m.rule_dest_targets[i] = 3
@@ -144,6 +146,7 @@ function mp:apply_rule(i)
 	end
 end
 
+-- Clock gets called for each step
 function mp:clock()
 	for i=1,8 do
 		if self.pushed[i] == 1 then

@@ -98,7 +98,7 @@ local function step()
       table.insert(active_notes, n)
     end
   end
-  notes = {} --why?
+  notes = {} --why? (perhaps mp:clock sets the notes again?)
 
   if params:get("note_length") < 4 then
     notes_off_metro:start((60 / clk.bpm / clk.steps_per_beat / 4) *
@@ -129,7 +129,7 @@ function init()
   grid_clk = metro.init()
   grid_clk.event = gridredraw
   grid_clk.time = 1 / 30
-
+  -- @todo could grid and screen share the same redraw clock?
   screen_clk = metro.init()
   screen_clk.event = function() redraw() end
   screen_clk.time = 1 / 15
@@ -180,7 +180,7 @@ function draw_mp()
   local offset_x = 24
   local offset_y = 16
 
-  -- Draw position of each tracker
+  -- Draw position of each tracker on the norns screen
   for i = 1, 8 do
     if mp.position[i] >= 1 then
       local y = ((i - 1) * 4) + offset_y
