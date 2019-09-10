@@ -74,7 +74,7 @@ function mp.new()
 		m.scount[i] = 0
 	end
 
-	m.mp_event = function(row, state) end 
+	m.mp_event = function(row, state) end --replaced by the caller?
 	return m
 end
 

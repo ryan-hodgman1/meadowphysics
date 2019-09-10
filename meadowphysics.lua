@@ -156,7 +156,7 @@ function init()
   hs.init()
 end
 
-function event(row, state)
+function event(row, state) -- Called by meadowphysics engine with updates at each clock step
   if state == 1 then
     table.insert(notes, params:get("root_note") + gridscales:note(row))
   end
