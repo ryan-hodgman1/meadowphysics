@@ -13,7 +13,7 @@
 engine.name = "PolyPerc"
 
 local hs = include("awake/lib/halfsecond")
-local MeadowPhysics = require "meadowphysics/lib/mp"
+local MeadowPhysics = include("meadowphysics/lib/mp")
 local GridScales = require "meadowphysics/lib/gridscales"
 local MusicUtil = require "musicutil"
 local BeatClock = require "beatclock"
@@ -30,42 +30,6 @@ local midi_out_device
 local midi_out_channel
 local clk = BeatClock.new()
 local notes = {}
-
-local options = {
-  OUTPUT = {
-    "audio",
-    "midi",
-    "audio + midi"
-  },
-  STEP_LENGTH_NAMES = {
-    "1 bar",
-    "1/2",
-    "1/3",
-    "1/4",
-    "1/6",
-    "1/8",
-    "1/12",
-    "1/16",
-    "1/24",
-    "1/32",
-    "1/48",
-    "1/64"
-  },
-  STEP_LENGTH_DIVIDERS = {
-    1,
-    2,
-    3,
-    4,
-    6,
-    8,
-    12,
-    16,
-    24,
-    32,
-    48,
-    64
-  }
-}
 
 local clk_midi = midi.connect()
 clk_midi.event = function(data)
@@ -85,7 +49,7 @@ end
 
 local function step()
   all_notes_off()
-  mp:clock()
+  mp:step()
 
   for _, n in pairs(notes) do
     local f = MusicUtil.note_num_to_freq(n)
@@ -98,20 +62,13 @@ local function step()
       table.insert(active_notes, n)
     end
   end
-  notes = {} --why? (perhaps mp:clock sets the notes again?)
+
+  notes = {} -- will be repopulated by the MeadowPhysics callback
 
   if params:get("note_length") < 4 then
     notes_off_metro:start((60 / clk.bpm / clk.steps_per_beat / 4) *
-    params:get("note_length"), 1)
+      params:get("note_length"), 1)
   end
-end
-
-local function stop()
-  all_notes_off()
-end
-
-local function reset_pattern()
-  clk:reset()
 end
 
 function init()
@@ -135,7 +92,7 @@ function init()
   screen_clk.time = 1 / 15
 
   midi_out_device = midi.connect(1)
-  -- midi_out_device.event = function() end
+  midi_out_device.event = function() end
 
   clk.on_step = step
   clk.on_stop = stop
@@ -145,8 +102,6 @@ function init()
   params:set("bpm", 120)
 
   notes_off_metro.event = all_notes_off
-
-  -- grid
   if g then mp:gridredraw(g) end
 
   screen_clk:start()
@@ -156,11 +111,37 @@ function init()
   hs.init()
 end
 
-function event(row, state) -- Called by meadowphysics engine with updates at each clock step
+
+-- MeadowPhysics callback
+-- (Called by meadowphysics engine with updates at each clock step)
+--
+--
+
+function event(row, state)
   if state == 1 then
     table.insert(notes, params:get("root_note") + gridscales:note(row))
   end
 end
+
+
+-- Helper functions
+--
+--
+--
+
+local function stop()
+  all_notes_off()
+end
+
+local function reset_pattern()
+  clk:reset()
+end
+
+
+-- Drawing
+--
+--
+--
 
 function redraw()
   if shift == 1 then
@@ -207,14 +188,6 @@ function draw_bpm()
   screen.update()
 end
 
-function g.key(x, y, z)
-  if shift == 1 then
-    gridscales:gridevent(x, y, z)
-  else
-    mp:gridevent(x, y, z)
-  end
-end
-
 function gridredraw()
   if shift == 1 then
     gridscales:gridredraw(g)
@@ -222,6 +195,12 @@ function gridredraw()
     mp:gridredraw(g)
   end
 end
+
+
+-- Events
+--
+--
+--
 
 function enc(n, d)
   if n == 1 then
@@ -248,7 +227,58 @@ function key(n, z)
   end
 end
 
+function g.key(x, y, z)
+  if shift == 1 then
+    gridscales:gridevent(x, y, z)
+  else
+    mp:gridevent(x, y, z)
+  end
+end
+
+-- Params setup
+--
+--
+--
+
+
 function setup_params()
+
+  local options = {
+    OUTPUT = {
+      "audio",
+      "midi",
+      "audio + midi"
+    },
+    STEP_LENGTH_NAMES = {
+      "1 bar",
+      "1/2",
+      "1/3",
+      "1/4",
+      "1/6",
+      "1/8",
+      "1/12",
+      "1/16",
+      "1/24",
+      "1/32",
+      "1/48",
+      "1/64"
+    },
+    STEP_LENGTH_DIVIDERS = {
+      1,
+      2,
+      3,
+      4,
+      6,
+      8,
+      12,
+      16,
+      24,
+      32,
+      48,
+      64
+    }
+  }
+
   params:add{
     type = "option",
     id = "output",
@@ -289,10 +319,10 @@ function setup_params()
     options = options.STEP_LENGTH_NAMES,
     default = 4,
     action = function(value)
-      clk.ticks_per_step = 96 / options.STEP_LENGTH_DIVIDERS[value]
-      clk.steps_per_beat = options.STEP_LENGTH_DIVIDERS[value] / 4
-      clk:bpm_change(clk.bpm)
-    end
+    clk.ticks_per_step = 96 / options.STEP_LENGTH_DIVIDERS[value]
+    clk.steps_per_beat = options.STEP_LENGTH_DIVIDERS[value] / 4
+    clk:bpm_change(clk.bpm)
+  end
   }
 
   params:add{
