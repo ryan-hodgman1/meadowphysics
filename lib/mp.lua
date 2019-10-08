@@ -24,8 +24,6 @@ mp.L2 = 12
 local gridbuf = require "gridbuf"
 local gbuf = gridbuf.new(16, 8)
 
- local function on_step(events) end
-
 function mp.new()
 	local m = {}
 	setmetatable(m, mp)
@@ -74,7 +72,6 @@ function mp.new()
 		m.scount[i] = 0
 	end
 
-	m.on_step = on_step 
 	m.mp_event = function(row, state) end 
 	return m
 end
@@ -147,7 +144,7 @@ function mp:apply_rule(i)
 	end
 end
 
-function mp:step()
+function mp:clock()
 	for i=1,8 do
 		if self.pushed[i] == 1 then
 			for n=1,8 do
@@ -200,18 +197,12 @@ function mp:step()
 		end
 	end
 
-	step_events = {}
 	for i=1,8 do
 		local row = math.abs(i - 9) -- inverse so that index 1 is bottom row
 		self.mp_event(row, self.state[i])
-		if self.clear[i] == 1 then 
-			table.insert(step_events, row)
-			self.state[i] = 0
-		end
+		if self.clear[i] == 1 then self.state[i] = 0 end
 		self.clear[i] = 0
 	end
-	on_step(step_events)
-	step_events = {}
 end
 
 function mp:gridevent(x, y, z)
