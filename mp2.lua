@@ -35,10 +35,9 @@ function init()
   clk.on_step = step
   clk:start()
   clk:bpm_change(bpm)
-  print("initialized")
 end
 
-function trigger_voice(voice) -- 
+function trigger_voice(voice) -- playback function here
   -- print(voice)
 end
 
@@ -50,7 +49,7 @@ end
 
 function key(n, z)
   print('key down')
-  -- dirty = true
+  mp:save(data_dir .. "mp.data")
 end
 
 function enc(n, d)
@@ -67,7 +66,8 @@ function g.key(x, y, z)
 end
 
 
-function redraw_oled()
+function redraw()
+  screen.clear()
   screen.aa(0)
   local offset_x = 32
   local offset_y = 16
@@ -89,21 +89,25 @@ function redraw_oled()
       screen.stroke()
     end
   end
-
+  screen.update()
 end
 
 
 -- Redraw Loops
-
 oled_r = metro.init()
 oled_r.time = 0.05 -- 20fps (OLED max)
 oled_r.event = function()
   if dirty == true then
-    screen.clear()
-    redraw_oled()
-    screen.update()
+    redraw()
     dirty = false
   end
 end
 oled_r:start()
+
+
+
+function cleanup()
+  clk:stop()
+end
+
 
