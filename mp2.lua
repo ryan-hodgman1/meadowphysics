@@ -29,8 +29,8 @@ local g = grid.connect()
 local bpm = 90
 
 function init()
-	mp = MeadowPhysics.loadornew(data_dir .. "mp.data")
-	mp.mp_event = trigger_voice
+  mp = MeadowPhysics.loadornew(data_dir .. "mp.data")
+  mp.mp_event = trigger_voice
   dirty = true
   clk.on_step = step
   clk:start()
