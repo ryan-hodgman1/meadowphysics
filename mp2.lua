@@ -25,13 +25,12 @@ local data_dir = "/home/we/dust/code/meadowphysics/data/"
 local mp
 local dirty = false
 local clk = BeatClock.new()
-local bpm = 60
+local g = grid.connect()
+local bpm = 90
 
 function init()
-
 	mp = MeadowPhysics.loadornew(data_dir .. "mp.data")
-	mp.mp_event = trigger_note
-  
+	mp.mp_event = trigger_voice
   dirty = true
   clk.on_step = step
   clk:start()
@@ -39,20 +38,19 @@ function init()
   print("initialized")
 end
 
-function trigger_note(row) -- 
-  -- print(row)
+function trigger_voice(voice) -- 
+  -- print(voice)
 end
 
 function step()
-  print("---")
   mp:clock()
   dirty = true
-  print("---")
+  if g then mp:gridredraw(g) end
 end
 
 function key(n, z)
   print('key down')
-  dirty = true
+  -- dirty = true
 end
 
 function enc(n, d)
@@ -60,10 +58,18 @@ function enc(n, d)
 end
 
 
+function g.key(x, y, z)
+  if shift == 1 then
+    gridscales:gridevent(x, y, z)
+  else
+    mp:gridevent(x, y, z)
+  end
+end
+
+
 function redraw_oled()
-  screen.clear()
   screen.aa(0)
-  local offset_x = 36
+  local offset_x = 32
   local offset_y = 16
 
   -- Draw position of each tracker on the norns screen
@@ -84,8 +90,6 @@ function redraw_oled()
     end
   end
 
-  screen.update()
-
 end
 
 
@@ -95,7 +99,9 @@ oled_r = metro.init()
 oled_r.time = 0.05 -- 20fps (OLED max)
 oled_r.event = function()
   if dirty == true then
+    screen.clear()
     redraw_oled()
+    screen.update()
     dirty = false
   end
 end

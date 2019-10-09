@@ -199,8 +199,11 @@ function mp:clock()
 
 	for i=1,8 do
 		local row = math.abs(i - 9) -- inverse so that index 1 is bottom row
+		
+		if self.clear[i] == 1 then 
+		  self.state[i] = 0
 		self.mp_event(row, self.state[i])
-		if self.clear[i] == 1 then self.state[i] = 0 end
+		  end
 		self.clear[i] = 0
 	end
 end
