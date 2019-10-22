@@ -4,7 +4,6 @@ local tabutil = require "tabutil"
 local mp = {}
 mp.__index = mp
 
--- Symbols to render in the grid leds
 mp.SIGN = {{0,0,0,0,0,0,0,0},-- o
 {0,24,24,126,126,24,24,0}, -- +
 {0,0,0,126,126,0,0,0}, -- -
@@ -26,7 +25,7 @@ local gridbuf = require "gridbuf"
 local gbuf = gridbuf.new(16, 8)
 
 function mp.new()
-	local m = {} -- meadowphysics state
+	local m = {}
 	setmetatable(m, mp)
 	m.edit_row = 0
 	m.key_count = 0
@@ -37,24 +36,23 @@ function mp.new()
 	m.state = {}
 	m.clear = {}
 
-	m.count = {}
-	m.position = {}
-	m.speed = {}
-	m.tick = {}
+	m.count = {} -- length of cycle
+	m.position = {} -- current position in cycle
+	m.speed = {} -- speed of cycle
+	m.tick = {} -- position in speed countdown
 	m.min = {}
 	m.max = {}
 	m.trigger = {}
 	m.toggle = {}
 	m.rules = {}
 	m.rule_dests = {}
-	m.sync = {}
+	m.sync = {} -- if true, reset dest rule to count
 	m.sound = 0
 	m.pushed = {}
 	m.rule_dest_targets = {}
 	m.smin = {}
 	m.smax = {}
 
-	-- initial values per voice
 	for i=1,8 do
 		m.count[i] = 8+i
 		m.position[i] = 8+i
@@ -64,7 +62,7 @@ function mp.new()
 		m.min[i] = 8+i
 		m.trigger[i] = (1 << i)
 		m.toggle[i] = 0
-		m.rules[i] = 2 -- Default value is INC
+		m.rules[i] = 2 -- inc
 		m.rule_dests[i] = i
 		m.sync[i] = (1 << i)
 		m.rule_dest_targets[i] = 3
@@ -73,8 +71,8 @@ function mp.new()
 		m.pushed[i] = 0
 		m.scount[i] = 0
 	end
-
-	m.mp_event = function(row, state) end --replaced by the caller?
+	
+	m.mp_event = function(row, state) end 
 	return m
 end
 
@@ -146,10 +144,13 @@ function mp:apply_rule(i)
 	end
 end
 
--- Clock gets called for each step
 function mp:clock()
-	for i=1,8 do
-		if self.pushed[i] == 1 then
+  
+	for i=1,8 do -- for each voice…
+
+		if self.pushed[i] == 1 then 
+		  print("voice", i , "pushed")
+		  
 			for n=1,8 do
 				if (self.sync[i] & (1 << n)) > 0 then
 					self.position[n] = self.count[n]
@@ -164,6 +165,7 @@ function mp:clock()
 				if (self.toggle[i] & (1 << n)) > 0 then
 					self.state[n] = self.state[n] ~ 1
 				end
+				
 			end
 
 			self.pushed[i] = 0
@@ -171,10 +173,9 @@ function mp:clock()
 
 		if self.tick[i] == 0 then
 			self.tick[i] = self.speed[i]
-
-			if self.position[i] == 1 then 
+			
+			if self.position[i] == 1 then -- Apply actions for voice i
 				self:apply_rule(i) 
-
 				self.position[i] = self.position[i] - 1
 
 				for n=1,8 do
@@ -201,9 +202,17 @@ function mp:clock()
 	end
 
 	for i=1,8 do
-		local row = math.abs(i - 9) -- inverse so that index 1 is bottom row
-		self.mp_event(row, self.state[i])
-		if self.clear[i] == 1 then self.state[i] = 0 end
+		-- local row = math.abs(i - 9) -- inverse so that index 1 is bottom row
+		row = i
+		
+		if self.position[i] == self.count[i] then
+		  print('new cycle', i)
+		end
+		
+		if self.clear[i] == 1 then 
+		  self.state[i] = 0
+		  -- self.mp_event(row, self.state[i])
+		  end
 		self.clear[i] = 0
 	end
 end
