@@ -31,20 +31,25 @@ create_voice = function(i)
     if v.current_step == 0 then -- dont have to check if tick is 0 because it has to be for step to be 0
       for i=1, #v.target_voices do
         v.target_voices[i].bang()
+        v.target_voices[i].apply_rule()
+        v.target_voices[i].reset()
       end
     end
     
   end
   
   v.bang = function()
-    v.apply_rule()
     -- emit trigger event (code which calls this can deduce whether to trigger or gate based on voice.mode)
     -- print("voice", v.index, "BANG")
   end
   
-  v.apply_rule = function()
+  v.reset = function ()
     v.current_step = v.current_cycle_length
     v.current_tick = v.ticks_per_step
+  end
+  
+  v.apply_rule = function()
+
   end
   
   print("created voice")

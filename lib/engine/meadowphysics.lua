@@ -1,4 +1,5 @@
 -- 
+local create_voice = include("meadowphysics/lib/engine/voice")
 
 local bc = require "beatclock"
 local clk = bc.new()
@@ -7,10 +8,13 @@ local gridbuf = require "gridbuf"
 local gbuf = gridbuf.new(16, 8)
 
 local mp = {}
+mp.emit_trigger = function () end
+mp.emit_tick = function () end
 mp.dirty = true
+
 local voices = {}
-local create_voice = include("meadowphysics/lib/engine/voice")
 mp.voices = voices
+
 
 function mp:init()
   print('init meadow')
@@ -22,17 +26,13 @@ function mp:init()
   clk:start()
 end
 
-mp.handle_trigger = function () end
-mp.emit_tick = function () end
-
+-- Event attachers
 function mp:on_trigger(f)
-  mp.handle_trigger = f
+  mp.emit_trigger = f
 end
 
 function mp:on_tick(f)
-  print("tick")
   mp.emit_tick = f
-  mp.dirty = true
 end
 
 
@@ -42,6 +42,7 @@ function handle_tick()
     voices[i]:tick()
   end
   mp.emit_tick()
+  mp.dirty = true
 end
 
 
