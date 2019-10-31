@@ -48,6 +48,9 @@ function enc()
   meadowphysics:handle_enc()
 end
 
-function key()
-  meadowphysics:handle_key()
+function key(n,z)
+  if(z == 1) then
+    meadowphysics.voices[n-1].bang()
+  end
+  meadowphysics:handle_key(n,z)
 end
