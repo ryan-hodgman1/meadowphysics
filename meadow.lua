@@ -13,7 +13,7 @@
 --
 --
 
-local meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
+meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
 
 function init()
   meadowphysics:init()
@@ -41,7 +41,6 @@ function redraw()
   screen.text(meadowphysics:get_state(1))
   screen.move(4, 24)
   screen.text(meadowphysics:get_state(2))
-  -- meadowphysics:screen_redraw(screen)
   screen.update()
 end
 

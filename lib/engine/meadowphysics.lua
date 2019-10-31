@@ -10,7 +10,7 @@ local mp = {}
 mp.dirty = true
 local voices = {}
 local create_voice = include("meadowphysics/lib/engine/voice")
-
+mp.voices = voices
 
 function mp:init()
   print('init meadow')

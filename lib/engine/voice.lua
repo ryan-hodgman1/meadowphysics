@@ -7,7 +7,7 @@ create_voice = function(i)
   v.current_tick = 4
   v.current_step = 4
   v.rule = "dec"
-  v.target_voices = {v}
+  v.target_voices = {}
   v.min_cycle_length = 4
   v.max_cycle_length = 4
   v.current_cycle_length = 4
@@ -22,9 +22,11 @@ create_voice = function(i)
       v.current_tick = v.current_tick - 1
     end
     
-    if v.current_tick == 0 then
+    if v.current_tick == 0 and v.current_step >= 1 then
       v.current_tick = v.ticks_per_step
-      v.current_step = v.current_step - 1
+      if v.current_step >= 1 then
+        v.current_step = v.current_step - 1
+      end
     end
     if v.current_step == 0 then -- dont have to check if tick is 0 because it has to be for step to be 0
       for i=1, #v.target_voices do
