@@ -52,6 +52,7 @@ function mp.new()
 	m.rule_dest_targets = {}
 	m.smin = {}
 	m.smax = {}
+	m.on_next_tick = {}
 
 	for i=1,8 do
 		m.count[i] = 8+i
@@ -65,6 +66,7 @@ function mp.new()
 		m.rules[i] = 2 -- inc
 		m.rule_dests[i] = i
 		m.sync[i] = (1 << i)
+		m.on_next_tick[i] = 0
 		m.rule_dest_targets[i] = 3
 		m.smin[i] = 0
 		m.smax[i] = 0
@@ -145,7 +147,7 @@ function mp:apply_rule(i)
 end
 
 function mp:clock()
-  
+  print("clock")
 	for i=1,8 do -- for each voice…
 
 		if self.pushed[i] == 1 then 
@@ -175,13 +177,22 @@ function mp:clock()
 			self.tick[i] = self.speed[i]
 			
 			if self.position[i] == 1 then -- Apply actions for voice i
-				self:apply_rule(i) 
+				self:apply_rule(i)
 				self.position[i] = self.position[i] - 1
 
 				for n=1,8 do
+				  
 					if (self.sync[i] & (1 << n)) > 0 then
+						-- self.position[n] = self.count[n]
+						-- self.tick[n] = self.speed[n]
+						-- self.on_next_tick[n] = 1
+					end
+					
+					if (self.sync[i] > 0 & self.on_next_tick[n] > 0) then
+					  print("reset", self.sync[i])
 						self.position[n] = self.count[n]
 						self.tick[n] = self.speed[n]
+						self.on_next_tick[n] = 0
 					end
 
 					if (self.trigger[i] & (1 << n)) > 0 then
@@ -192,7 +203,9 @@ function mp:clock()
 					if (self.toggle[i] & (1 << n)) > 0 then
 						self.state[n] = self.state[n] ~ 1
 					end
+					
 				end
+
 			elseif self.position[i] > 1 then
 				self.position[i] = self.position[i] - 1
 			end
@@ -204,14 +217,8 @@ function mp:clock()
 	for i=1,8 do
 		-- local row = math.abs(i - 9) -- inverse so that index 1 is bottom row
 		row = i
-		
-		if self.position[i] == self.count[i] then
-		  print('new cycle', i)
-		end
-		
 		if self.clear[i] == 1 then 
 		  self.state[i] = 0
-		  -- self.mp_event(row, self.state[i])
 		  end
 		self.clear[i] = 0
 	end

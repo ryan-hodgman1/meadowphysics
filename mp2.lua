@@ -22,7 +22,7 @@ print(" ")
 local BeatClock = require "beatclock"
 local MeadowPhysics = include("meadowphysics/lib/mp_engine")
 local data_dir = "/home/we/dust/code/meadowphysics/data/"
-local mp
+mp = {}
 local dirty = false
 local clk = BeatClock.new()
 local g = grid.connect()
@@ -45,7 +45,7 @@ function trigger_voice(voice) -- playback function here
 end
 
 function step()
-  mp:clock()
+  -- mp:clock()
   dirty = true
   if g then mp:gridredraw(g) end
 end
