@@ -28,7 +28,7 @@ create_voice = function(i)
     end
     if v.current_step == 0 then -- dont have to check if tick is 0 because it has to be for step to be 0
       for i=1, #v.target_voices do
-        -- v.target_voices[i].bang()
+        v.target_voices[i].bang()
       end
     end
     

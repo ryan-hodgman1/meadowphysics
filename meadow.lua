@@ -30,13 +30,11 @@ end
 ti = 0
 function handle_clock()
   ti = ti + 1
-  -- print('clock')
   redraw()
 end
 
 function redraw()
   screen.clear()
-  print('draw')
   screen.move(4, 8)
   screen.text(ti)
   screen.move(4, 16)
