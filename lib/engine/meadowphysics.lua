@@ -30,6 +30,7 @@ function mp:on_trigger(f)
 end
 
 function mp:on_tick(f)
+  print("tick")
   mp.emit_tick = f
   mp.dirty = true
 end
@@ -55,12 +56,7 @@ end
 
 
 function mp:screen_redraw(scr)
-  scr.move(4, 8)
-  scr.text(ti)
-  scr.move(4, 16)
-  scr.text(meadowphysics:get_state(1))
-  scr.move(4, 24)
-  scr.text(meadowphysics:get_state(2))
+
 end
 
 
