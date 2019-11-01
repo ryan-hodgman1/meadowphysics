@@ -35,7 +35,6 @@ function mp:on_tick(f)
   mp.emit_tick = f
 end
 
-
 function handle_tick()
   -- Pass a tick to each voice
   for i=1,8 do
@@ -46,8 +45,12 @@ function handle_tick()
 end
 
 
-function mp:handle_key()
-
+function mp:handle_key(n, z)
+  if(z == 1) then
+    voices[n-1].bang()
+    voices[n-1].reset()
+    mp.dirty = true
+  end
 end
 
 

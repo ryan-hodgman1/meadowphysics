@@ -27,15 +27,12 @@ function handle_trigger(e) -- Sound making thing goes here!
   print("trigger")
 end
 
-ti = 0
 function handle_clock()
-  ti = ti + 1
+
 end
 
 function redraw()
   screen.clear()
-  screen.move(4, 8)
-  screen.text(ti)
   screen.move(4, 16)
   screen.text(meadowphysics:get_state(1))
   screen.move(4, 24)
@@ -56,16 +53,10 @@ end
 oled_r:start()
 
 
-
 function enc()
   meadowphysics:handle_enc()
 end
 
 function key(n,z)
-  if(z == 1) then
-    meadowphysics.voices[n-1].bang()
-    meadowphysics.voices[n-1].reset()
-    meadowphysics.dirty = true
-  end
   meadowphysics:handle_key(n,z)
 end
