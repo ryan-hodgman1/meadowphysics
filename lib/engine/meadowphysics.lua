@@ -24,7 +24,7 @@ function mp:init(voice_count)
     end
   end
   clk.on_step = handle_tick
-  clk:bpm_change(120)
+  clk:bpm_change(90)
   clk:start()
 end
 

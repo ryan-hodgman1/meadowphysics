@@ -16,7 +16,7 @@
 meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
 
 function init()
-  meadowphysics:init(2)
+  meadowphysics:init(8)
   meadowphysics:on_bang(handle_bang)
   redraw()
 end

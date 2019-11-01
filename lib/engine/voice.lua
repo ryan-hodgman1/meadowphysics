@@ -1,17 +1,22 @@
 
 
 create_voice = function(i)
+  local start_length = math.floor(math.random()*12)+4
+  local start_ticks = math.floor(math.random(3)+1)
+  start_length = 8
+  start_ticks = 4
   local v = {}
   v.index = i
-  v.ticks_per_step = 4
+  v.ticks_per_step = start_ticks
   v.current_tick = 4
-  v.current_step = 4
+  v.current_step = start_length
   v.rule = "dec"
   v.target_voices = {v}
-  v.min_cycle_length = 4
-  v.max_cycle_length = 4
-  v.current_cycle_length = 4
+  v.min_cycle_length = 8
+  v.max_cycle_length = 8
+  v.current_cycle_length = start_length
   v.bang_type = "trigger" -- or "gate"
+  v.gate = false
   v.on_bang = function() end
   
   v.tick = function()
@@ -40,11 +45,13 @@ create_voice = function(i)
   end
   
   v.bang = function()
-    -- emit trigger event (code which calls this can deduce whether to trigger or gate based on voice.mode)
-    -- print("voice", v.index, "BANG")
+    if v.bang_type == "gate" then
+      v.gate = not v.gate
+    end
     local bang = {}
     bang.type = v.bang_type
     bang.voice = v.index
+    bang.gate = v.gate
     v.on_bang(bang)
   end
   
