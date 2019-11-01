@@ -1,7 +1,6 @@
 -- 
 local create_voice = include("meadowphysics/lib/engine/voice")
--- local ui = include("meadowphysics/lib/engine/ui")
-
+local mp_ui = include("meadowphysics/lib/engine/mp_ui")
 local bc = require "beatclock"
 local clk = bc.new()
 local g = grid.connect()
@@ -58,10 +57,12 @@ end
 
 
 function mp:screen_redraw()
-  screen.move(4, 16)
-  screen.text(mp:get_state(1))
-  screen.move(4, 24)
-  screen.text(mp:get_state(2))
+  -- screen.move(4, 16)
+  -- screen.text(mp:get_state(1))
+  -- screen.move(4, 24)
+  -- screen.text(mp:get_state(2))
+  -- mp_ui:draw(mp)
+  mp_ui:draw(mp)
 end
 
 
