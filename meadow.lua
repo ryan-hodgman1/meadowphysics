@@ -18,9 +18,9 @@ meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
 function init()
   meadowphysics:init(8)
   meadowphysics:on_bang(handle_bang)
-  meadowphysics.voices[1].is_playing = true
+  meadowphysics:on_clock_tick(clock_tick)
+  -- meadowphysics.voices[1].is_playing = true
   meadowphysics.voices[1].target_voices = { meadowphysics.voices[1], meadowphysics.voices[2], meadowphysics.voices[3] }
-  meadowphysics.voices[2].target_voices = { meadowphysics.voices[1] }
   redraw()
 end
 
@@ -34,6 +34,10 @@ function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'gate' and e.value == 0 then
     -- print("GATE LOW", e.voice)
   end
+end
+
+function clock_tick()
+  redraw()
 end
 
 function enc()
@@ -50,12 +54,12 @@ function redraw()
   screen.update()
 end
 
-oled_r = metro.init()
-oled_r.time = 0.05 -- 20fps (OLED max)
-oled_r.event = function()
-  if meadowphysics.should_redraw == true then
-    redraw()
-    meadowphysics.should_redraw = false
-  end
-end
-oled_r:start()
+-- oled_r = metro.init()
+-- oled_r.time = 0.05 -- 20fps (OLED max)
+-- oled_r.event = function()
+--   if meadowphysics.should_redraw == true then
+--     redraw()
+--     meadowphysics.should_redraw = false
+--   end
+-- end
+-- oled_r:start()

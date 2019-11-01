@@ -3,18 +3,18 @@
 create_voice = function(i)
   -- local start_length = math.floor(math.random()*12)+4
   -- local start_ticks = math.floor(math.random(3)+1)
-  start_length = 8
-  start_ticks = 1
+  start_length = 4
+  start_ticks = 4
   local v = {}
   v.index = i
   v.ticks_per_step = start_ticks
-  v.current_tick = 1
+  v.current_tick = 0
   v.current_step = start_length
   v.rule = "dec"
   v.is_playing = false
   v.target_voices = {}
-  v.min_cycle_length = 8
-  v.max_cycle_length = 8
+  v.min_cycle_length = start_length
+  v.max_cycle_length = start_length
   v.current_cycle_length = start_length
   v.bang_type = "trigger" -- or "gate"
   v.gate = false
@@ -26,26 +26,68 @@ create_voice = function(i)
     -- when it hits zero it resets to a step value determined by it's rule, and emits a bang
 
     if not v.is_playing then return end
-
-
-    if v.current_tick >= 1 then
-      v.current_tick = v.current_tick - 1
+    
+    -- Reset tick clock and advance step (toward zero) when hitting the clock division
+    if (v.current_tick == v.ticks_per_step) then
+      v.current_tick = 0
+      v.current_step = v.current_step - 1
     end
     
-    if v.current_tick == 0 and v.current_step >= 1 then
-      v.current_tick = v.ticks_per_step
-      if v.current_step >= 1 then
-        v.current_step = v.current_step - 1
-      end
-    end
-    if v.current_step == 0 then -- dont have to check if tick is 0 because it has to be for step to be 0
+    if (v.current_step == 0) then
+      v.current_step = v.current_cycle_length
       v.is_playing = false
+    end
+    
+    if v.current_tick == 0 and v.current_step == v.current_cycle_length then
       for i=1, #v.target_voices do
-        v.target_voices[i].apply_rule()
-        v.target_voices[i].reset()
-        v.target_voices[i].bang()
+        local voice = v.target_voices[i]
+        voice.current_tick = 0
+        voice.current_step = voice.current_cycle_length
+        voice.bang()
+        voice.is_playing = true
+        print("bang")
       end
     end
+    
+    
+    
+    
+    
+    v.current_tick = v.current_tick + 1
+    
+
+    -- if v.current_tick >= 1 then
+    --   -- trigger a tick
+    --   v.current_tick = v.current_tick - 1
+    -- end
+    
+    -- if v.current_tick == 0 and v.current_step >= 1 then
+    --   v.current_tick = v.ticks_per_step
+    --   -- trigger a step
+    --   if v.current_step >= 1 then
+    --     v.current_step = v.current_step - 1
+    --   end
+    -- end
+    
+    ------
+    
+    -- if v.current_step == 0 then
+    --   v.is_playing = false
+    --   for i=1, #v.target_voices do
+    --     local voice = v.target_voices[i]
+    --     voice.reset()
+    --     voice.bang()
+    --     voice.is_playing = true
+        -- print(voice.index, voice.current_step, voice.current_tick)
+        
+        --current state of this voice is 0/4 (if 4 is the current ticks)
+        
+        -- v.target_voices[i].current_tick = v.target_voices[i].ticks_per_step
+        -- v.target_voices[i].apply_rule()
+        -- v.target_voices[i].reset()
+        -- v.target_voices[i].bang()
+    --   end
+    -- end
     
   end
   
@@ -59,7 +101,7 @@ create_voice = function(i)
   end
   
   v.bang = function()
-    v.is_playing = true
+    -- v.is_playing = true
     if v.bang_type == "gate" then
       v.gate = not v.gate
     end
@@ -71,8 +113,9 @@ create_voice = function(i)
   end
   
   v.reset = function ()
+    print("reset voice")
     v.current_step = v.current_cycle_length
-    v.current_tick = v.ticks_per_step
+    v.current_tick = 1
   end
   
   v.apply_rule = function()
