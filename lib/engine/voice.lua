@@ -7,11 +7,12 @@ create_voice = function(i)
   v.current_tick = 4
   v.current_step = 4
   v.rule = "dec"
-  v.target_voices = {}
+  v.target_voices = {v}
   v.min_cycle_length = 4
   v.max_cycle_length = 4
   v.current_cycle_length = 4
-  v.mode = "trigger" -- or "gate"
+  v.bang_type = "trigger" -- or "gate"
+  v.on_bang = function() end
   
   v.tick = function()
     -- Clock hits this function for every tick, the clock multiplication affects the amount of ticks
@@ -41,6 +42,10 @@ create_voice = function(i)
   v.bang = function()
     -- emit trigger event (code which calls this can deduce whether to trigger or gate based on voice.mode)
     -- print("voice", v.index, "BANG")
+    local bang = {}
+    bang.type = v.bang_type
+    bang.voice = v.index
+    v.on_bang(bang)
   end
   
   v.reset = function ()

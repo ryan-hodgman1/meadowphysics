@@ -16,42 +16,22 @@
 meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
 
 function init()
-  meadowphysics:init()
-  meadowphysics:on_trigger(handle_trigger)
-  meadowphysics:on_tick(handle_clock)
+  meadowphysics:init(2)
+  meadowphysics:on_bang(handle_bang)
   redraw()
-  print("GO")
 end
 
-function handle_trigger(e) -- Sound making thing goes here!
-  print("trigger")
-end
-
-function handle_clock()
-
-end
-
-function redraw()
-  screen.clear()
-  screen.move(4, 16)
-  screen.text(meadowphysics:get_state(1))
-  screen.move(4, 24)
-  screen.text(meadowphysics:get_state(2))
-  screen.update()
-end
-
-
--- Redraw Loops
-oled_r = metro.init()
-oled_r.time = 0.05 -- 20fps (OLED max)
-oled_r.event = function()
-  if meadowphysics.dirty == true then
-    redraw()
-    meadowphysics.dirty = false
+function handle_bang(e) -- Sound making thing goes here!
+  if e.type == 'trigger' then
+    print("TRIGGER", e.voice)
+  end
+  if e.type == 'gate' and e.value == 1 then
+    print("GATE HIGH", e.voice)
+  end
+  if e.type == 'gate' and e.value == 0 then
+    print("GATE LOW", e.voice)
   end
 end
-oled_r:start()
-
 
 function enc()
   meadowphysics:handle_enc()
@@ -60,3 +40,19 @@ end
 function key(n,z)
   meadowphysics:handle_key(n,z)
 end
+
+function redraw()
+  screen.clear()
+  meadowphysics:screen_redraw()
+  screen.update()
+end
+
+oled_r = metro.init()
+oled_r.time = 0.05 -- 20fps (OLED max)
+oled_r.event = function()
+  if meadowphysics.should_redraw == true then
+    redraw()
+    meadowphysics.should_redraw = false
+  end
+end
+oled_r:start()

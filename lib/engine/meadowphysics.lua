@@ -1,5 +1,6 @@
 -- 
 local create_voice = include("meadowphysics/lib/engine/voice")
+-- local ui = include("meadowphysics/lib/engine/ui")
 
 local bc = require "beatclock"
 local clk = bc.new()
@@ -8,40 +9,37 @@ local gridbuf = require "gridbuf"
 local gbuf = gridbuf.new(16, 8)
 
 local mp = {}
-mp.emit_trigger = function () end
-mp.emit_tick = function () end
-mp.dirty = true
+mp.emit_bang = function () end
+mp.should_redraw = true
 
 local voices = {}
 mp.voices = voices
 
-
-function mp:init()
-  print('init meadow')
-  for i=1,8 do
+function mp:init(voice_count)
+  mp.voice_count = voice_count
+  for i=1,voice_count do
     voices[i] = create_voice(i)
+    local voice = voices[i]
+    voice.on_bang = function (bang)
+      mp.emit_bang(bang)
+    end
   end
   clk.on_step = handle_tick
-  clk:bpm_change(40)
+  clk:bpm_change(120)
   clk:start()
 end
 
--- Event attachers
-function mp:on_trigger(f)
-  mp.emit_trigger = f
-end
-
-function mp:on_tick(f)
-  mp.emit_tick = f
+-- Event handler
+function mp:on_bang(f)
+  mp.emit_bang = f
 end
 
 function handle_tick()
   -- Pass a tick to each voice
-  for i=1,8 do
+  for i=1,mp.voice_count do
     voices[i]:tick()
   end
-  mp.emit_tick()
-  mp.dirty = true
+  mp.should_redraw = true
 end
 
 
@@ -49,7 +47,7 @@ function mp:handle_key(n, z)
   if(z == 1) then
     voices[n-1].bang()
     voices[n-1].reset()
-    mp.dirty = true
+    mp.should_redraw = true
   end
 end
 
@@ -59,8 +57,11 @@ function mp:handle_enc()
 end
 
 
-function mp:screen_redraw(scr)
-
+function mp:screen_redraw()
+  screen.move(4, 16)
+  screen.text(mp:get_state(1))
+  screen.move(4, 24)
+  screen.text(mp:get_state(2))
 end
 
 
