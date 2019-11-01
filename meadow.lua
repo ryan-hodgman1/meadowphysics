@@ -18,18 +18,21 @@ meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
 function init()
   meadowphysics:init(8)
   meadowphysics:on_bang(handle_bang)
+  meadowphysics.voices[1].is_playing = true
+  meadowphysics.voices[1].target_voices = { meadowphysics.voices[1], meadowphysics.voices[2], meadowphysics.voices[3] }
+  meadowphysics.voices[2].target_voices = { meadowphysics.voices[1] }
   redraw()
 end
 
 function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'trigger' then
-    print("TRIGGER", e.voice)
+    -- print("TRIGGER", e.voice)
   end
   if e.type == 'gate' and e.value == 1 then
-    print("GATE HIGH", e.voice)
+    -- print("GATE HIGH", e.voice)
   end
   if e.type == 'gate' and e.value == 0 then
-    print("GATE LOW", e.voice)
+    -- print("GATE LOW", e.voice)
   end
 end
 
