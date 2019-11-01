@@ -25,7 +25,7 @@ function mp:init(voice_count)
     end
   end
   clk.on_step = handle_tick
-  clk:bpm_change(40)
+  clk:bpm_change(95)
   clk:start()
 end
 
@@ -41,7 +41,7 @@ end
 
 local ti = 0
 function handle_tick()
-  print("-----------------------------")
+  print(ti, "-----------------------------")
 
   
   ti = ti + 1
@@ -52,7 +52,7 @@ function handle_tick()
   end
   mp.should_redraw = true
   mp.emit_clock_tick()
-  print(voices[1].current_tick, voices[2].current_tick, voices[3].current_tick)
+  -- print(voices[1].current_tick, voices[2].current_tick, voices[3].current_tick)
   -- print(voices[1].current_step, voices[1].current_tick)
 end
 
