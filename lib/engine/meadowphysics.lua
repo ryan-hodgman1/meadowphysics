@@ -25,7 +25,7 @@ function mp:init(voice_count)
     end
   end
   clk.on_step = handle_tick
-  clk:bpm_change(95)
+  clk:bpm_change(60)
   clk:start()
 end
 
@@ -41,7 +41,7 @@ end
 
 local ti = 0
 function handle_tick()
-  print(ti, "-----------------------------")
+  -- print(ti, "-----------------------------")
 
   
   ti = ti + 1
@@ -76,12 +76,16 @@ end
 
 
 function mp:screen_redraw()
-  screen.move(4, 16)
+  screen.move(4, 8)
   screen.text(ti)
-  -- screen.move(4, 24)
-  -- screen.text(mp:get_state(2))
+  screen.move(4, 16)
+  screen.text(mp:get_state(1))
+  screen.move(4, 24)
+  screen.text(mp:get_state(2))
+  screen.move(4, 32)
+  screen.text(mp:get_state(3))
   -- mp_ui:draw(mp)
-  mp_ui:draw(mp)
+  -- mp_ui:draw(mp)
 end
 
 

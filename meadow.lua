@@ -41,7 +41,7 @@ function handle_bang(e) -- Sound making thing goes here!
 end
 
 function clock_tick()
-  redraw()
+  -- redraw()
 end
 
 function enc()
@@ -58,12 +58,13 @@ function redraw()
   screen.update()
 end
 
--- oled_r = metro.init()
--- oled_r.time = 0.05 -- 20fps (OLED max)
--- oled_r.event = function()
---   if meadowphysics.should_redraw == true then
---     redraw()
---     meadowphysics.should_redraw = false
---   end
--- end
--- oled_r:start()
+oled_r = metro.init()
+oled_r.time = 0.05 -- 20fps (OLED max)
+oled_r.event = function()
+  redraw()
+  if meadowphysics.should_redraw == true then
+    -- redraw()
+    -- meadowphysics.should_redraw = false
+  end
+end
+oled_r:start()
