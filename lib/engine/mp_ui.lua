@@ -16,7 +16,7 @@ function mp_ui:draw(mp)
     screen.move(offset_x, offset_y)
     local gx = offset_x
     local gy = offset_y + (padding * (i-1))
-    
+
     for i = 1, 16 do
       screen.rect(gx, gy, 1, 1)
       screen.fill()
@@ -28,13 +28,23 @@ function mp_ui:draw(mp)
       local y = ((i - 1) * 4) + offset_y
       local x = 0
       x = ((voice.current_step - 1) * padding) + offset_x
-      if voice.current_step == 1 then
+      if voice.current_step == voice.current_cycle_length and voice.is_playing then
         screen.level(16)
       else
-        screen.level(3)
+        screen.level(4)
       end
       screen.move(x, y)
       screen.rect(x, y, 1, 1)
+      screen.fill()
+      screen.level(3)
+      screen.rect(x+1, y, 1, 1)
+      screen.fill()
+      screen.level(2)
+      screen.rect(x+2, y, 1, 1)
+      screen.fill()
+      screen.stroke()
+      screen.level(1)
+      screen.rect(x+3, y, 1, 1)
       screen.fill()
       screen.stroke()
     end
