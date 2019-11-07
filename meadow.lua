@@ -19,11 +19,21 @@ function init()
   meadowphysics:init(8)
   meadowphysics:on_bang(handle_bang)
   meadowphysics:on_clock_tick(clock_tick)
-  
+  meadowphysics.clock:bpm_change(60)
   meadowphysics.voices[1].is_playing = true
-  meadowphysics.voices[1].target_voices = { meadowphysics.voices[2]}
-  meadowphysics.voices[2].target_voices = { meadowphysics.voices[1], meadowphysics.voices[3]}
-
+  meadowphysics.voices[1].target_voices = { meadowphysics.voices[1], meadowphysics.voices[2]}
+  meadowphysics.voices[1].ticks_per_step = 1
+  meadowphysics.voices[2].ticks_per_step = 1
+  
+  meadowphysics.voices[4].is_playing = true
+  meadowphysics.voices[4].target_voices = { meadowphysics.voices[4],  meadowphysics.voices[5]}
+  meadowphysics.voices[4].ticks_per_step = 2
+  meadowphysics.voices[5].ticks_per_step = 2
+  
+  meadowphysics.voices[7].is_playing = true
+  meadowphysics.voices[7].target_voices = { meadowphysics.voices[7],  meadowphysics.voices[8]}
+  meadowphysics.voices[7].ticks_per_step = 4
+  meadowphysics.voices[8].ticks_per_step = 4
   
   redraw()
 end
@@ -68,3 +78,11 @@ oled_r.event = function()
   end
 end
 oled_r:start()
+
+
+function cleanup ()
+  oled_r:stop()
+  meadowphysics.clock:stop()
+end
+
+
