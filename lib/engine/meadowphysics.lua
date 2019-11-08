@@ -1,6 +1,7 @@
 -- 
 local create_voice = include("meadowphysics/lib/engine/voice")
 local mp_ui = include("meadowphysics/lib/engine/mp_ui")
+local mp_grid = include("meadowphysics/lib/engine/mp_grid")
 local bc = require "beatclock"
 local clk = bc.new()
 local g = grid.connect()
@@ -24,7 +25,9 @@ function mp:init(voice_count)
       mp.emit_bang(bang)
     end
   end
+
   clk.on_step = handle_tick
+
   clk:bpm_change(120)
   clk:start()
   mp.clock = clk
@@ -82,6 +85,7 @@ function mp:screen_redraw()
   -- screen.move(4, 32)
   -- screen.text(mp:get_state(3))
   mp_ui:draw(mp)
+  -- mp_grid:redraw()
   -- mp_ui:draw(mp)
 end
 

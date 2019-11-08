@@ -13,13 +13,18 @@
 --
 --
 
-meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
+local meadowphysics = include("meadowphysics/lib/engine/meadowphysics")
 
 function init()
   meadowphysics:init(8)
   meadowphysics:on_bang(handle_bang)
-  meadowphysics:on_clock_tick(clock_tick)
+  meadowphysics:on_clock_tick(function()
+    redraw()
+  end)
   meadowphysics.clock:bpm_change(160)
+
+
+  -- Test properties
   meadowphysics.voices[1].is_playing = true
   meadowphysics.voices[1].target_voices = { meadowphysics.voices[1], meadowphysics.voices[2]}
   meadowphysics.voices[1].ticks_per_step = 1
@@ -50,10 +55,6 @@ function handle_bang(e) -- Sound making thing goes here!
   end
 end
 
-function clock_tick()
-  redraw()
-end
-
 function enc()
   meadowphysics:handle_enc()
 end
@@ -78,7 +79,6 @@ oled_r.event = function()
   end
 end
 -- oled_r:start()
-
 
 function cleanup ()
   oled_r:stop()
