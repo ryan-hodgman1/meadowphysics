@@ -24,6 +24,8 @@ local function Meadowphysics ()
       voices[i] = create_voice(i)
       local voice = voices[i]
       voice.target_voices = {voice} -- initial state is looping
+      -- voice.current_cycle_length = 7+i
+      -- voice.current_step = 7+i
       voice.on_bang = function (bang)
         mp.on_bang(bang)
       end

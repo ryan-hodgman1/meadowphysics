@@ -64,7 +64,6 @@ create_voice = function(i)
   end
   
   v.bang = function()
-    print("bang", v.index)
     -- v.is_playing = true
     if v.bang_type == "gate" then
       v.gate = not v.gate

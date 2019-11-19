@@ -20,8 +20,12 @@ local g = grid.connect()
 
 
 function init()
+
+  crow.ii.pullup(true)
+  crow.ii.jf.mode(1)
+
   meadowphysics.init(8)
-  meadowphysics.on_bang(handle_bang)
+  meadowphysics.on_bang = handle_bang
 
   clk.on_step = function ()
     meadowphysics:handle_tick()
@@ -58,7 +62,10 @@ end
 
 function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'trigger' then
-    -- print("TRIGGER", e.voice)
+    print("TRIGGER", e.voice)
+    -- print('trigger', e.voice)
+    -- crow.ii.jf.play_note(e.voice, 1)
+    crow.ii.jf.play_note(e.voice/12 - 37/1200,8)
   end
   if e.type == 'gate' and e.value == 1 then
     -- print("GATE HIGH", e.voice)
