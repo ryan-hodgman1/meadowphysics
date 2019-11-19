@@ -1,103 +1,84 @@
 -- 
-local create_voice = include("meadowphysics/lib/engine/voice")
-local mp_ui = include("meadowphysics/lib/engine/mp_ui")
-local mp_grid = include("meadowphysics/lib/engine/mp_grid")
-local bc = require "beatclock"
-local clk = bc.new()
-local g = grid.connect()
-local gridbuf = require "gridbuf"
-local gbuf = gridbuf.new(16, 8)
 
-local mp = {}
-mp.emit_bang = function () end
-mp.emit_clock_tick = function () end
-mp.should_redraw = true
+local function Meadowphysics ()
 
-local voices = {}
-mp.voices = voices
+  local create_voice = include("meadowphysics/lib/engine/voice")
+  local ui = include("meadowphysics/lib/engine/mp_ui")
+  print(ui[1])
+  local mp_grid = include("meadowphysics/lib/engine/mp_grid")
+  local bc = require "beatclock"
+  local g = grid.connect()
+  local gridbuf = require "gridbuf"
+  local gbuf = gridbuf.new(16, 8)
 
-function mp:init(voice_count)
-  mp.voice_count = voice_count
-  for i=1,voice_count do
-    voices[i] = create_voice(i)
-    local voice = voices[i]
-    voice.on_bang = function (bang)
-      mp.emit_bang(bang)
+  local mp = {}
+  mp_ui = ui.new(mp)
+  mp.should_redraw = true
+
+  local voices = {}
+  mp.voices = voices
+
+  mp.init = function (voice_count)
+    mp.voice_count = voice_count
+    for i=1,voice_count do
+      voices[i] = create_voice(i)
+      local voice = voices[i]
+      voice.on_bang = function (bang)
+        mp.on_bang(bang)
+      end
     end
   end
 
-  clk.on_step = handle_tick
-
-  clk:bpm_change(120)
-  clk:start()
-  mp.clock = clk
-end
-
--- Event handler
-function mp:on_bang(f)
-  mp.emit_bang = f
-end
-
-function mp:on_clock_tick(f)
-  mp.emit_clock_tick = f
-end
-
-
-local ti = 0
-function handle_tick()
-  print(ti, "-----------------------------")
-  ti = ti + 1
-  if ti>16 then ti = 1 end
-  -- Pass a tick to each voice
-  for i=1,mp.voice_count do
-    voices[i]:tick()
+  -- Overwritten by meadow.lua
+  mp.on_bang = function (f)
+    print("bang")
   end
-  mp.should_redraw = true
-  mp.emit_clock_tick()
-end
 
-
-function mp:handle_key(n, z)
-  if(z == 1 and n == 2 ) then
-    voices[1].bang()
-    voices[1].is_playing = true
-    voices[1].reset()
+  local ti = 0
+  function mp:handle_tick()
+    -- print(ti, "-----------------------------")
+    ti = ti + 1
+    if ti>16 then ti = 1 end
+    -- Pass a tick to each voice
+    for i=1,mp.voice_count do
+      voices[i].tick()
+    end
     mp.should_redraw = true
   end
-  if (z ==1 and n == 3) then
-    handle_tick()
+
+
+  function mp:handle_key (n, z)
+
   end
+
+
+  function mp:handle_enc()
+    
+  end
+
+
+  function mp:draw()
+    screen.move(4, 8)
+    screen.text(ti)
+    mp_ui:draw(mp)
+    mp:grid_redraw()
+  end
+
+
+  mp.grid_redraw = function ()
+
+  end
+
+  function mp:grid_redraw()
+  end
+
+
+  mp.get_state = function (i)
+    return "Voice " .. i .. ": " .. voices[i].current_step .. "/" .. voices[i].current_tick
+  end
+
+  return mp
+
 end
 
-
-function mp:handle_enc()
-  handle_tick()
-end
-
-
-function mp:screen_redraw()
-  screen.move(4, 8)
-  screen.text(ti)
-  -- screen.move(4, 16)
-  -- screen.text(mp:get_state(1))
-  -- screen.move(4, 24)
-  -- screen.text(mp:get_state(2))
-  -- screen.move(4, 32)
-  -- screen.text(mp:get_state(3))
-  mp_ui:draw(mp)
-  -- mp_grid:redraw()
-  -- mp_ui:draw(mp)
-end
-
-
-function mp:grid_redraw()
-
-end
-
-
-function mp:get_state(i)
-  return "Voice " .. i .. ": " .. voices[i].current_step .. "/" .. voices[i].current_tick
-end
-
-return mp
-
+return Meadowphysics
