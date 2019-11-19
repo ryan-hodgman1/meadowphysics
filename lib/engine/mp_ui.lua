@@ -21,7 +21,7 @@ function meadowphysics_ui.new (mp)
         screen.rect(gx, gy, 1, 1)
         screen.fill()
         screen.stroke()
-        gx = gx+padding
+        gx = gx + padding
       end
       if voice.current_step >= 1 then
         local y = ((i - 1) * 4) + offset_y

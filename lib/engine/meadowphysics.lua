@@ -23,6 +23,7 @@ local function Meadowphysics ()
     for i=1,voice_count do
       voices[i] = create_voice(i)
       local voice = voices[i]
+      voice.target_voices = {voice} -- initial state is looping
       voice.on_bang = function (bang)
         mp.on_bang(bang)
       end
@@ -56,21 +57,26 @@ local function Meadowphysics ()
     
   end
 
+  function mp:handle_grid_input(x, y, z)
+    if (z == 1) then
+      voices[y].bang()
+      voices[y].just_triggered = true
+      voices[y].current_step = x
+      voices[y].current_tick = 0
+      voices[y].current_cycle_length = x
+      voices[y].is_playing = true
+    end
+  end
+
 
   function mp:draw()
     screen.move(4, 8)
     screen.text(ti)
     mp_ui:draw(mp)
-    mp:grid_redraw()
+    mp_grid:draw(mp)
   end
 
 
-  mp.grid_redraw = function ()
-
-  end
-
-  function mp:grid_redraw()
-  end
 
 
   mp.get_state = function (i)
