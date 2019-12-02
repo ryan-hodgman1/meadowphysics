@@ -1,18 +1,17 @@
 -- 
 
 local function Meadowphysics ()
+  local mp = {}
 
-  local create_voice = include("meadowphysics/lib/engine/voice")
+  local create_voice = include("meadowphysics/lib/engine/mp_voice")
   local ui = include("meadowphysics/lib/engine/mp_ui")
-  print(ui[1])
   local mp_grid = include("meadowphysics/lib/engine/mp_grid")
   local bc = require "beatclock"
   local g = grid.connect()
   local gridbuf = require "gridbuf"
   local gbuf = gridbuf.new(16, 8)
 
-  local mp = {}
-  mp_ui = ui.new(mp)
+  local mp_ui = ui.new(mp)
   mp.should_redraw = true
 
   local voices = {}
