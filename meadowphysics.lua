@@ -15,7 +15,7 @@
 
 local Beatclock = require "beatclock"
 local clk = Beatclock.new()
-local meadowphysics = include("meadowphysics/lib/engine/mp_core")()
+local meadowphysics = include("meadowphysics/lib/engine/core")()
 local g = grid.connect()
 
 

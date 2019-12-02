@@ -3,9 +3,9 @@
 local function Meadowphysics ()
   local mp = {}
 
-  local create_voice = include("meadowphysics/lib/engine/mp_voice")
-  local ui = include("meadowphysics/lib/engine/mp_ui")
-  local mp_grid = include("meadowphysics/lib/engine/mp_grid")
+  local create_voice = include("meadowphysics/lib/engine/voice")
+  local ui = include("meadowphysics/lib/engine/ui")
+  local mp_grid = include("meadowphysics/lib/engine/grid")
   local bc = require "beatclock"
   local g = grid.connect()
   local gridbuf = require "gridbuf"
