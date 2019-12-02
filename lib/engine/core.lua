@@ -4,6 +4,7 @@ local function Meadowphysics ()
   local mp = {}
 
   local create_voice = include("meadowphysics/lib/engine/voice")
+  local setup_params = include("meadowphysics/lib/engine/parameters")
   local ui = include("meadowphysics/lib/engine/ui")
   local mp_grid = include("meadowphysics/lib/engine/grid")
   local bc = require "beatclock"
@@ -19,6 +20,7 @@ local function Meadowphysics ()
 
   mp.init = function (voice_count)
     mp.voice_count = voice_count
+    setup_params(mp)
     for i=1,voice_count do
       voices[i] = create_voice(i)
       local voice = voices[i]
