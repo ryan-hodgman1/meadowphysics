@@ -10,11 +10,11 @@ create_voice = function(i)
   v.ticks_per_step = start_ticks
   v.current_tick = 0
   v.current_step = start_length
-  v.rule = "dec"
+  v.rule = "pole"
   v.is_playing = false
   v.target_voices = {}
-  v.min_cycle_length = start_length
-  v.max_cycle_length = start_length
+  v.min_cycle_length = 6
+  v.max_cycle_length = 12
   v.current_cycle_length = start_length
   v.bang_type = "trigger" -- or "gate"
   v.gate = false
@@ -44,6 +44,7 @@ create_voice = function(i)
         voice.bang()
         voice.just_triggered = true
         voice.current_tick = 0
+        voice.apply_rule(v.rule)
         voice.current_step = voice.current_cycle_length
         voice.is_playing = true
       end
@@ -81,8 +82,41 @@ create_voice = function(i)
     v.current_tick = 1
   end
   
-  v.apply_rule = function()
-
+  v.apply_rule = function(rule)
+    if rule == "increment" then
+      v.current_cycle_length = v.current_cycle_length + 1
+      if v.current_cycle_length > v.max_cycle_length then
+        v.current_cycle_length = v.min_cycle_length
+      end
+    end
+    if rule == "decrement" then
+      v.current_cycle_length = v.current_cycle_length - 1
+      if v.current_cycle_length < v.min_cycle_length then
+        v.current_cycle_length = v.max_cycle_length
+      end
+    end
+    if rule == "max" then
+      v.current_cycle_length = v.max_cycle_length
+    end
+    if rule == "min" then
+      v.current_cycle_length = v.min_cycle_length
+    end
+    if rule == "random" then
+      local delta = v.max_cycle_length - v.min_cycle_length
+      v.current_cycle_length = v.min_cycle_length + math.random(delta)
+    end
+    if rule == "pole" then
+      if v.current_cycle_length == v.max_cycle_length then
+        v.current_cycle_length = v.min_cycle_length
+      else
+        v.current_cycle_length = v.max_cycle_length
+      end
+    end
+    if rule == "stop" then
+      v.target_voices = {}
+      v.is_playing = true
+      v.current_step = v.current_cycle_length
+    end
   end
   
   return v
