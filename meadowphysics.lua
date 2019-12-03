@@ -62,7 +62,7 @@ end
 
 function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'trigger' then
-    print("TRIGGER", e.voice)
+    --print("TRIGGER", e.voice)
     -- crow.ii.jf.play_note(e.voice/12 - 37/1200,8)
   end
   if e.type == 'gate' and e.value == 1 then

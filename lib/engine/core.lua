@@ -1,4 +1,4 @@
--- 
+--
 
 local function Meadowphysics ()
   local mp = {}
@@ -57,24 +57,69 @@ local function Meadowphysics ()
 
 
   function mp:handle_enc()
-    
+
   end
 
+  mp.grid_voice_key = false -- is the first column key pressed?
+  mp.grid_rule_key = false -- is the second columns pressed?
+  mp.grid_voice_bounds_key = false -- are one of the position columns pressed?
+  mp.grid_range_start = false
+
+  mp.grid_key_state = {
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+  }
+
   function mp:handle_grid_input(x, y, z)
+    mp.grid_key_state[y][x] = z
+    -- Loop through grid key state and find some actions to make!
     if (z == 1) then
-      voices[y].bang()
-      voices[y].just_triggered = true
-      voices[y].current_step = x
-      voices[y].current_tick = 0
-      voices[y].current_cycle_length = x
-      voices[y].is_playing = true
+      for i = 1, 8 do
+        if mp.grid_key_state[i][1] == 1 and mp.grid_key_state[i][2] == 1 then
+          -- Rule adjustment
+          mp.grid_target_focus = i
+          mp.grid_mode = "rule"
+        elseif mp.grid_key_state[i][1] == 1 then
+          -- Voice and triggers adjustment
+          mp.grid_target_focus = i
+          mp.grid_mode = "voice"
+        elseif i == y then
+          -- Pattern Adjustment
+          local pressed_keys = {}
+          for _x = 2, 16 do
+            if (mp.grid_key_state[i][_x] == 1) then
+              table.insert(pressed_keys, _x)
+            end
+          end
+          if (#pressed_keys > 1) then -- Range press in pattern mode
+            mp.voices[i].min_cycle_length = pressed_keys[1]
+            mp.voices[i].max_cycle_length = pressed_keys[#pressed_keys]
+          end
+          if (#pressed_keys == 1) then -- Single press in pattern mode
+            voices[i].bang()
+            voices[i].just_triggered = true
+            voices[i].current_step = x
+            voices[i].current_tick = 0
+            voices[i].current_cycle_length = x
+            voices[i].min_cycle_length = x
+            voices[i].max_cycle_length = x
+            voices[i].is_playing = true
+          end
+        end
+      end
     end
   end
 
 
   function mp:draw()
-    screen.move(4, 8)
-    screen.text(ti)
+    -- screen.move(4, 8)
+    -- screen.text(ti)
     mp_ui:draw(mp)
     mp_grid:draw(mp)
   end
