@@ -99,16 +99,29 @@ local function Meadowphysics ()
           -- Voice and triggers adjustment
           mp.grid_target_focus = i
           mp.grid_mode = "voice"
-          if (y == i and x > 8) then
-            print("set clock division for ", i, "to be ", x-8)
+          if (x == 3) then
+            print("toggle playback of ", y)
+            mp.voices[y].toggle_playback()
           end
           if (x == 4) then
             print("make ", i, " trigger", y)
           end
+          if (x == 6) then
+            print("set mode of ", y, " to gate")
+            mp.voices[y].set_bang_type("gate")
+          end
+          if (x == 7) then
+            print("set mode of ", y, " to trigger")
+            mp.voices[y].set_bang_type("trigger")
+          end
+          if (x > 8) then
+            print("set clock division for ", y, "to be ", x - 8)
+            mp.voices[y].set_clock_division(x - 8)
+          end
           break
         end
 
-        if i == y then
+        if y == i then
           -- Pattern Adjustment
           if (#pressed_keys > 1) then -- Range press in pattern mode
             mp.voices[i].min_cycle_length = pressed_keys[1]
