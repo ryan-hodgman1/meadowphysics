@@ -81,22 +81,35 @@ local function Meadowphysics ()
     -- Loop through grid key state and find some actions to make!
     if (z == 1) then
       for i = 1, 8 do
+        local pressed_keys = {}
+        for _x = 2, 16 do
+          if (mp.grid_key_state[i][_x] == 1) then
+            table.insert(pressed_keys, _x)
+          end
+        end
+
         if mp.grid_key_state[i][1] == 1 and mp.grid_key_state[i][2] == 1 then
           -- Rule adjustment
           mp.grid_target_focus = i
           mp.grid_mode = "rule"
-        elseif mp.grid_key_state[i][1] == 1 then
+          break
+        end
+
+        if mp.grid_key_state[i][1] == 1 then
           -- Voice and triggers adjustment
           mp.grid_target_focus = i
           mp.grid_mode = "voice"
-        elseif i == y then
-          -- Pattern Adjustment
-          local pressed_keys = {}
-          for _x = 2, 16 do
-            if (mp.grid_key_state[i][_x] == 1) then
-              table.insert(pressed_keys, _x)
-            end
+          if (y == i and x > 8) then
+            print("set clock division for ", i, "to be ", x-8)
           end
+          if (x == 4) then
+            print("make ", i, " trigger", y)
+          end
+          break
+        end
+
+        if i == y then
+          -- Pattern Adjustment
           if (#pressed_keys > 1) then -- Range press in pattern mode
             mp.voices[i].min_cycle_length = pressed_keys[1]
             mp.voices[i].max_cycle_length = pressed_keys[#pressed_keys]
