@@ -12,6 +12,7 @@ local function Meadowphysics ()
   local gridbuf = require "gridbuf"
   local gbuf = gridbuf.new(16, 8)
 
+  mp.grid_mode = "pattern"
   local mp_ui = ui.new(mp)
   mp.should_redraw = true
 
@@ -104,14 +105,13 @@ local function Meadowphysics ()
             mp.voices[y].toggle_playback()
           end
           if (x == 4) then
-            print("make ", i, " trigger", y)
+            print("Toggle voice ", i, " triggering", y)
+            mp.voices[i].toggle_target(mp.voices[y])
           end
           if (x == 6) then
-            print("set mode of ", y, " to gate")
             mp.voices[y].set_bang_type("gate")
           end
           if (x == 7) then
-            print("set mode of ", y, " to trigger")
             mp.voices[y].set_bang_type("trigger")
           end
           if (x > 8) then
@@ -121,6 +121,7 @@ local function Meadowphysics ()
           break
         end
 
+        mp.grid_mode = "pattern"
         if y == i then
           -- Pattern Adjustment
           if (#pressed_keys > 1) then -- Range press in pattern mode

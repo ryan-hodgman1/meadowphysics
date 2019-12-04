@@ -17,11 +17,43 @@ local rule_icons = {
 function grid:draw(mp)
   g:all(0)
 
-  -- Draw position of voices
-  for i = 1, #mp.voices do
-    local voice = mp.voices[i]
-    g:led(voice.current_step, i,  4)
+  if(mp.grid_mode == "voice") then
+  	for i = 1, #mp.voices do
+	  	g:led(1, i,  1)
+	  	g:led(3, i,  1)
+	  	g:led(4, i,  1)
+	  	g:led(6, i,  1)
+	  	g:led(7, i,  1)
+
+  		local voice = mp.voices[i]
+  		if (voice.is_playing) then
+  			g:led(3, i,  4)
+  		end
+
+  		if (mp.voices[mp.grid_target_focus].target_voices[i] ~= nil) then
+  			g:led(4, i,  4)
+  		end
+
+  		if (voice.bang_type == "trigger") then
+  			g:led(6, i,  4)
+  		end
+
+  		if (voice.bang_type == "gate") then
+  			g:led(7, i,  4)
+  		end
+
+  		g:led(8 + voice.ticks_per_step, i,  4)
+
+  	end
   end
+
+  if (mp.grid_mode == "pattern") then
+	  -- Draw position of voices
+	  for i = 1, #mp.voices do
+	    local voice = mp.voices[i]
+	    g:led(voice.current_step, i,  4)
+	  end
+	end
 
 
   g:refresh()

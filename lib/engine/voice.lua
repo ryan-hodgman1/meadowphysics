@@ -56,13 +56,21 @@ create_voice = function(i)
   end
 
   v.add_target = function(voice)
-
-    -- table.insert(v.target_voices, voice)
-    -- v.target_voices[voice.index] = voice
+    v.target_voices[voice.index] = voice
+    print("Add target voice ", voice.index)
   end
 
   v.remove_target = function(voice)
-    -- v.target_voices[voice.index] = nil
+    print("remove target voice ", voice.index)
+    v.target_voices[voice.index] = nil
+  end
+
+  v.toggle_target = function(voice)
+    if v.target_voices[voice.index] == nil then
+      v.add_target(voice)
+    else
+      v.remove_target(voice)
+    end
   end
 
   v.set_bang_type = function(bang_type)
