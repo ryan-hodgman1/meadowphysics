@@ -63,32 +63,33 @@ function init()
     meadowphysics:handle_tick()
     meadowphysics.should_redraw = true
     g:all(0)
+    redraw()
   end
   clk:bpm_change(120)
   clk:start()
 
   -- Test properties
-  meadowphysics.voices[1].is_playing = true
-  meadowphysics.voices[1].target_voices = {
-    meadowphysics.voices[1],
-    meadowphysics.voices[2]
-  }
-  meadowphysics.voices[1].ticks_per_step = 1
-  meadowphysics.voices[2].ticks_per_step = 1  
-  meadowphysics.voices[4].is_playing = true
-  meadowphysics.voices[4].target_voices = {
-    meadowphysics.voices[4],
-    meadowphysics.voices[5]
-  }
-  meadowphysics.voices[4].ticks_per_step = 2
-  meadowphysics.voices[5].ticks_per_step = 2
-  meadowphysics.voices[7].is_playing = true
-  meadowphysics.voices[7].target_voices = {
-    meadowphysics.voices[7],
-    meadowphysics.voices[8]
-  }
-  meadowphysics.voices[7].ticks_per_step = 4
-  meadowphysics.voices[8].ticks_per_step = 4
+  -- meadowphysics.voices[1].is_playing = true
+  -- meadowphysics.voices[1].target_voices = {
+  --   meadowphysics.voices[1],
+  --   meadowphysics.voices[2]
+  -- }
+  -- meadowphysics.voices[1].ticks_per_step = 1
+  -- meadowphysics.voices[2].ticks_per_step = 1
+  -- meadowphysics.voices[4].is_playing = true
+  -- meadowphysics.voices[4].target_voices = {
+  --   meadowphysics.voices[4],
+  --   meadowphysics.voices[5]
+  -- }
+  -- meadowphysics.voices[4].ticks_per_step = 2
+  -- meadowphysics.voices[5].ticks_per_step = 2
+  -- meadowphysics.voices[7].is_playing = true
+  -- meadowphysics.voices[7].target_voices = {
+  --   meadowphysics.voices[7],
+  --   meadowphysics.voices[8]
+  -- }
+  -- meadowphysics.voices[7].ticks_per_step = 4
+  -- meadowphysics.voices[8].ticks_per_step = 4
 
 
 
@@ -116,19 +117,19 @@ function redraw()
   screen.update()
 end
 
-oled_r = metro.init()
-oled_r.time = 0.05 -- 20fps (OLED max)
-oled_r.event = function()
-  redraw()
-  if meadowphysics.should_redraw == true then
-    redraw()
-    meadowphysics.should_redraw = false
-  end
-end
-oled_r:start()
+-- oled_r = metro.init()
+-- oled_r.time = 0.1 -- 20fps (OLED max)
+-- oled_r.event = function()
+--   redraw()
+--   if meadowphysics.should_redraw == true then
+--     redraw()
+--     meadowphysics.should_redraw = false
+--   end
+-- end
+-- oled_r:start()
 
 function cleanup ()
-  oled_r:stop()
+  -- oled_r:stop()
   clk:stop()
 end
 
