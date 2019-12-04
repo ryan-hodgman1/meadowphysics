@@ -141,6 +141,16 @@ local function Meadowphysics ()
         end
       end
     end
+
+     -- this is a bit of a kludgy way of returning focus back to pattern mode
+    if (z == 0) then
+      if (x == 1) then
+        mp.grid_target_focus = false
+        mp.grid_mode = "pattern"
+      end
+    end
+
+
   end
 
 
