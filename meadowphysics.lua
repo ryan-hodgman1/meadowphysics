@@ -25,7 +25,7 @@ engine.name = 'Ack'
 
 function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'trigger' then
-    print("TRIGGER", e.voice)
+    -- print("TRIGGER", e.voice)
     -- crow.ii.jf.play_note(e.voice/12 - 37/1200,8)
     engine.trig(e.voice-1)
   end
@@ -63,7 +63,6 @@ function init()
     meadowphysics:handle_tick()
     meadowphysics.should_redraw = true
     g:all(0)
-    redraw()
   end
   clk:bpm_change(120)
   clk:start()
@@ -117,19 +116,19 @@ function redraw()
   screen.update()
 end
 
--- oled_r = metro.init()
--- oled_r.time = 0.1 -- 20fps (OLED max)
--- oled_r.event = function()
---   redraw()
---   if meadowphysics.should_redraw == true then
---     redraw()
---     meadowphysics.should_redraw = false
---   end
--- end
--- oled_r:start()
+oled_r = metro.init()
+oled_r.time = 0.05 -- 20fps (OLED max)
+oled_r.event = function()
+  redraw()
+  if meadowphysics.should_redraw == true then
+    redraw()
+    meadowphysics.should_redraw = false
+  end
+end
+oled_r:start()
 
 function cleanup ()
-  -- oled_r:stop()
+  oled_r:stop()
   clk:stop()
 end
 

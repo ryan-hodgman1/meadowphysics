@@ -73,7 +73,12 @@ create_voice = function(i)
     end
   end
 
+  v.toggle_playback = function()
+    v.is_playing = not v.is_playing
+  end
+
   v.set_bang_type = function(bang_type)
+    print("set bang type of ", v.index, " to ", bang_type)
     v.bang_type = bang_type
   end
 

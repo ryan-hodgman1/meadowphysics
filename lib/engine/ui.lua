@@ -37,6 +37,8 @@ function meadowphysics_ui.new (mp)
         screen.rect(x, y, 1, 1)
         screen.fill()
         screen.level(3)
+
+        -- fireball trails :3
         -- screen.rect(x+1, y, 1, 1)
         -- screen.fill()
         -- screen.level(2)
@@ -47,6 +49,7 @@ function meadowphysics_ui.new (mp)
         -- screen.rect(x+3, y, 1, 1)
         -- screen.fill()
         -- screen.stroke()
+
       end
     end
   end
