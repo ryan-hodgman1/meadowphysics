@@ -88,7 +88,7 @@ local function Meadowphysics ()
       end
 
       if (mp.grid_key_state[i][1] == 1 and mp.grid_key_state[i][2] == 1) then
-        print("VOICE MODE")
+        print("RULE MODE")
         mp.grid_mode = "rule"
         mp.grid_target_focus = i
       end
@@ -121,6 +121,15 @@ local function Meadowphysics ()
       end
 
 
+    end
+
+
+    if (mp.grid_mode == "rule" and z == 1) then
+      if x > 8 and y > 1 and y < 8 then
+        local rules = {"increment", "decrement", "min", "max", "random", "pole", "stop"}
+        print("set rule", rules[y-1], " for voice", mp.grid_target_focus)
+        mp.voices[mp.grid_target_focus].rule = rules[y-1]
+      end
     end
 
 

@@ -11,6 +11,7 @@ create_voice = function(i, mp)
   v.rule = "increment"
   v.is_playing = false
   v.target_voices = { false, false, false, false, false, false, false, false }
+  v.target_voices[i] = true
   v.min_cycle_length = start_length
   v.max_cycle_length = start_length
   v.current_cycle_length = start_length
