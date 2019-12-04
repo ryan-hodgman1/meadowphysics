@@ -23,11 +23,8 @@ local function Meadowphysics ()
     mp.voice_count = voice_count
     setup_params(mp)
     for i=1,voice_count do
-      voices[i] = create_voice(i)
+      voices[i] = create_voice(i, mp)
       local voice = voices[i]
-      voice.target_voices = {voice} -- initial state is looping
-      -- voice.current_cycle_length = 7+i
-      -- voice.current_step = 7+i
       voice.on_bang = function (bang)
         mp.on_bang(bang)
       end
@@ -107,8 +104,7 @@ local function Meadowphysics ()
       end
 
       if (x == 4) then -- this is buggy!
-        print("Toggle voice ", i, " triggering", y)
-        mp.voices[mp.grid_target_focus].toggle_target(mp.voices[y])
+        mp.voices[mp.grid_target_focus].toggle_target(y)
       end
 
       if (x == 6) then

@@ -47,8 +47,10 @@ function grid:draw(mp)
     -- Light up the focused voice
     g:led(1, mp.grid_target_focus,  4)
     -- Show all the voices targeted by this voice
-    for i = 1, #mp.voices[mp.grid_target_focus].target_voices do
-      g:led(4, mp.voices[mp.grid_target_focus].target_voices[i].index,  4)
+    for ti = 1, #mp.voices[mp.grid_target_focus].target_voices do
+      if mp.voices[mp.grid_target_focus].target_voices[ti] == true then
+        g:led(4, ti,  4)
+      end
     end
   end
 

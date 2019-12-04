@@ -1,8 +1,6 @@
 
 
-create_voice = function(i)
-  -- local start_length = math.floor(math.random()*12)+4
-  -- local start_ticks = math.floor(math.random(3)+1)
+create_voice = function(i, mp)
   start_length = 8
   start_ticks = 1
   local v = {}
@@ -12,7 +10,7 @@ create_voice = function(i)
   v.current_step = start_length
   v.rule = "increment"
   v.is_playing = false
-  v.target_voices = {}
+  v.target_voices = { false, false, false, false, false, false, false, false }
   v.min_cycle_length = start_length
   v.max_cycle_length = start_length
   v.current_cycle_length = start_length
@@ -40,13 +38,15 @@ create_voice = function(i)
 
     if v.current_tick == 0 and v.current_step == v.current_cycle_length and not v.just_triggered then
       for i=1, #v.target_voices do
-        local voice = v.target_voices[i]
-        voice.bang()
-        voice.just_triggered = true
-        voice.current_tick = 0
-        voice.apply_rule(v.rule)
-        voice.current_step = voice.current_cycle_length
-        voice.is_playing = true
+        if v.target_voices[i] == true then
+          local voice = mp.voices[i]
+          voice.bang()
+          voice.just_triggered = true
+          voice.current_tick = 0
+          voice.apply_rule(v.rule)
+          voice.current_step = voice.current_cycle_length
+          voice.is_playing = true
+        end
       end
     end
 
@@ -55,21 +55,13 @@ create_voice = function(i)
 
   end
 
-  v.add_target = function(voice)
-    v.target_voices[voice.index] = voice
-    print("Add target voice ", voice.index)
-  end
-
-  v.remove_target = function(voice)
-    print("remove target voice ", voice.index)
-    v.target_voices[voice.index] = nil
-  end
-
-  v.toggle_target = function(voice)
-    if v.target_voices[voice.index] == nil then
-      v.add_target(voice)
+  v.toggle_target = function(voice_index)
+    if v.target_voices[voice_index] == false then
+      print("Voice ", voice_index, "will now be triggered by voice ", v.index)
+      v.target_voices[voice_index] = true
     else
-      v.remove_target(voice)
+      print("Voice ", voice_index, "will no longer be triggered by voice ", v.index)
+      v.target_voices[voice_index] = false
     end
   end
 
