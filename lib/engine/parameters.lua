@@ -19,6 +19,20 @@ setup_params = function(mp)
     --   end
     -- }
 
+
+
+    params:add{
+      type = "number",
+      id = ("tempo"),
+      name = ("tempo"),
+      min = 60,
+      max = 240,
+      default = 120,
+      action = function(value)
+        mp.clock:bpm_change(value)
+      end
+    }
+
   params:add{
   	type = "number",
   	id = "midi_out_device",
@@ -42,11 +56,24 @@ setup_params = function(mp)
   }
 
 
-    for i=1, mp.voice_count do
-      -- print("setup voice params")
-      -- params:add_separator()
-      local id = "voice_" .. i .. "_"
-      local name = "Voice " .. i .. " "
+  for i=1, mp.voice_count do
+    -- print("setup voice params")
+    -- params:add_separator()
+    local id = "voice_" .. i .. "_"
+    local name = "Voice " .. i .. " "
+
+
+    params:add{
+      type = "number",
+      id = (id .. "_midi_note"),
+      name = (name .. " note"),
+      min = 0,
+      max = 64,
+      default = i-1,
+      action = function(value)
+        print("change " .. name .. "midi note")
+      end
+    }
 
       -- params:add {
       --   type = "file",

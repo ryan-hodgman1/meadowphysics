@@ -32,12 +32,9 @@ m.event = function(data)
 end
 
 local function all_notes_off()
-  if (params:get("output") == 2 or params:get("output") == 3) then
-    for _, a in pairs(active_notes) do
-      midi_out_device:note_off(a, nil, meadowphysics.midi_out_channel)
-    end
+  for i = 1, 8 do
+    m:note_off(params:get("voice_" .. i .. "__midi_note"), 100, params:get("midi_out_channel"))
   end
-  active_notes = {}
 end
 
 function handle_bang(e) -- Sound making thing goes here!
@@ -45,7 +42,7 @@ function handle_bang(e) -- Sound making thing goes here!
     -- print("TRIGGER", e.voice)
     -- crow.ii.jf.play_note(e.voice/12 - 37/1200,8)
     engine.trig(e.voice-1)
-    make_note(e.voice-1)
+    make_note(e.voice)
     -- trigger midi
 
   end
@@ -58,13 +55,8 @@ function handle_bang(e) -- Sound making thing goes here!
 end
 
 function make_note(track)
-    -- local midich = params:get(track .."_midi_chan")
-    local midi_channel = 1
-    -- currently 1 == C3 (60 = 59 + 1)
-    -- midi_note = (59 + n) + ( (oct - 3) * 12 )
-    midi_note = track
-    m:note_on(midi_note,100,midi_channel)
-    table.insert(active_notes, midi_note)
+    midi_note = params:get("voice_" .. track .. "__midi_note")
+    m:note_on(midi_note, 100, params:get("midi_out_channel"))
 end
 
 function init()
@@ -74,8 +66,7 @@ function init()
 
   meadowphysics.init(8)
   meadowphysics.on_bang = handle_bang
-
-
+  meadowphysics.clock = clk
 
   params:add_separator()
   params:add_separator()
@@ -87,6 +78,7 @@ function init()
   print(engine.list_commands())
 
   clk.on_step = function ()
+    all_notes_off()
     meadowphysics:handle_tick()
     meadowphysics.should_redraw = true
     g:all(0)
