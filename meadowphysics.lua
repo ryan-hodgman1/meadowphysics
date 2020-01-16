@@ -22,12 +22,32 @@ local Ack = include("ack/lib/ack")
 engine.name = 'Ack'
 
 
+local scale_names = {}
+notes = {}
+local active_notes = {}
+
+local m = midi.connect()
+m.event = function(data)
+  clk:process_midi(data)
+end
+
+local function all_notes_off()
+  if (params:get("output") == 2 or params:get("output") == 3) then
+    for _, a in pairs(active_notes) do
+      midi_out_device:note_off(a, nil, meadowphysics.midi_out_channel)
+    end
+  end
+  active_notes = {}
+end
 
 function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'trigger' then
     -- print("TRIGGER", e.voice)
     -- crow.ii.jf.play_note(e.voice/12 - 37/1200,8)
     engine.trig(e.voice-1)
+    make_note(e.voice-1)
+    -- trigger midi
+
   end
   if e.type == 'gate' and e.value == 1 then
     -- print("GATE HIGH", e.voice)
@@ -37,8 +57,15 @@ function handle_bang(e) -- Sound making thing goes here!
   end
 end
 
-
-
+function make_note(track)
+    -- local midich = params:get(track .."_midi_chan")
+    local midi_channel = 1
+    -- currently 1 == C3 (60 = 59 + 1)
+    -- midi_note = (59 + n) + ( (oct - 3) * 12 )
+    midi_note = track
+    m:note_on(midi_note,100,midi_channel)
+    table.insert(active_notes, midi_note)
+end
 
 function init()
 

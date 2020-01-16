@@ -1,27 +1,27 @@
 setup_params = function(mp)
 
   -- Voices
-    params:add{
-      type = "option",
-      id = "scale",
-      name = "scale",
-      options = {"major", "minor", "dorian"},
-      action = function(value)
-      end
-    }
+    -- params:add{
+    --   type = "option",
+    --   id = "scale",
+    --   name = "scale",
+    --   options = {"major", "minor", "dorian"},
+    --   action = function(value)
+    --   end
+    -- }
 
-    params:add{
-      type = "option",
-      id = "midi_output",
-      name = "Midi Output",
-      options = {"enabled", "disabled"},
-      action = function(value)
-      end
-    }
+    -- params:add{
+    --   type = "option",
+    --   id = "midi_output",
+    --   name = "Midi Output",
+    --   options = {"enabled", "disabled"},
+    --   action = function(value)
+    --   end
+    -- }
 
   params:add{
-  	type = "number", 
-  	id = "midi_out_device", 
+  	type = "number",
+  	id = "midi_out_device",
   	name = "midi out device",
     min = 1,
     max = 4,
@@ -32,8 +32,8 @@ setup_params = function(mp)
 	}
 
   params:add{
-  	type = "number", 
-  	id = "midi_out_channel", 
+  	type = "number",
+  	id = "midi_out_channel",
   	name = "midi out channel",
     min = 1, max = 16, default = 1,
     action = function(value)
