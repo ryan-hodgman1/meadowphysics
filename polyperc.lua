@@ -17,14 +17,25 @@ local Beatclock = require "beatclock"
 local clk = Beatclock.new()
 local meadowphysics = include("meadowphysics/lib/engine/core")()
 local g = grid.connect()
+local MusicUtil = require "musicutil"
 
-local Ack = include("ack/lib/ack")
-engine.name = 'Ack'
+engine.name = 'PolyPerc'
 
 
 local scale_names = {}
-notes = {}
-local active_notes = {}
+
+notes = {
+  69,
+  71,
+  72,
+  74,
+  76,
+  77,
+  79,
+  81
+}
+
+-- local active_notes = {}
 
 local m = midi.connect()
 m.event = function(data)
@@ -39,7 +50,7 @@ end
 
 function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'trigger' then
-    engine.trig(e.voice-1)
+    engine.hz(MusicUtil.note_num_to_freq(notes[e.voice]))
     make_note(e.voice)
     crow.ii.jf.play_note((e.voice-60)/12,5)
   end
@@ -68,10 +79,6 @@ function init()
 
   params:add_separator()
   params:add_separator()
-  Ack.add_params()
-  for i=1, meadowphysics.voice_count do
-    Ack.add_channel_params(i)
-  end
 
   clk.on_step = function ()
     all_notes_off()
@@ -104,14 +111,22 @@ function redraw()
   screen.update()
 end
 
+
+function gridredraw()
+  meadowphysics:gridredraw()
+end
+
+gridredrawtimer = metro.init(function() gridredraw() end, 0.02, -1)
+gridredrawtimer:start()
+
 oled_r = metro.init()
 oled_r.time = 0.05 -- 20fps (OLED max)
 oled_r.event = function()
   redraw()
-  if meadowphysics.should_redraw == true then
-    redraw()
-    meadowphysics.should_redraw = false
-  end
+  -- if meadowphysics.should_redraw == true then
+  --   redraw()
+  --   meadowphysics.should_redraw = false
+  -- end
 end
 oled_r:start()
 

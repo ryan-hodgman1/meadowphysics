@@ -10,6 +10,11 @@ function meadowphysics_ui.new (mp)
     local offset_x = 35
     local offset_y = 18
     local padding = 4
+    
+    if #mp.voices > 8 then
+      offset_y = 2
+    end
+
     -- Draw position of each tracker on the norns screen
     for i = 1, #mp.voices do
       local voice = mp.voices[i]

@@ -31,9 +31,7 @@ local function Meadowphysics ()
     end
   end
 
-  -- Overwritten by meadow.lua
   mp.on_bang = function (f)
-    print("bang")
   end
 
   local ti = 0
@@ -160,69 +158,6 @@ local function Meadowphysics ()
     end
 
 
-
-
-    -- Loop through grid key state and find some actions to take!
-    if (z == 1) then
-
-
-
-
-        -- if mp.grid_key_state[i][1] == 1 and mp.grid_key_state[i][2] == 1 then
-        --   -- Rule adjustment
-        --   mp.grid_target_focus = i
-        --   mp.grid_mode = "rule"
-        --   break
-        -- end
-
-        -- if mp.grid_key_state[i][1] == 1 then
-
-        --   -- Voice and triggers adjustment
-        --   mp.grid_target_focus = i
-        --   print("grid target focus", i)
-        --   mp.grid_mode = "voice"
-
-        --   if (x == 3) then
-        --     print("toggle playback of ", y)
-        --     mp.voices[y].toggle_playback()
-        --   end
-        --   if (x == 4) then
-        --     print("Toggle voice ", i, " triggering", y)
-        --     mp.voices[mp.grid_target_focus].toggle_target(mp.voices[y])
-        --   end
-        --   if (x == 6) then
-        --     mp.voices[y].set_bang_type("gate")
-        --   end
-        --   if (x == 7) then
-        --     mp.voices[y].set_bang_type("trigger")
-        --   end
-        --   if (x > 8) then
-        --     print("set clock division for ", y, "to be ", x - 8)
-        --     mp.voices[y].set_clock_division(x - 8)
-        --   end
-        --   break
-        -- end
-
-        -- if y == i and mp.grid_mode ~= "voice" then
-        --   -- Pattern Adjustment
-        --   if (#pressed_keys > 1) then -- Range press in pattern mode
-        --     mp.voices[i].min_cycle_length = pressed_keys[1]
-        --     mp.voices[i].max_cycle_length = pressed_keys[#pressed_keys]
-        --   end
-        --   if (#pressed_keys == 1) then -- Single press in pattern mode
-        --     voices[i].bang()
-        --     voices[i].just_triggered = true
-        --     voices[i].current_step = x
-        --     voices[i].current_tick = 0
-        --     voices[i].current_cycle_length = x
-        --     voices[i].min_cycle_length = x
-        --     voices[i].max_cycle_length = x
-        --     voices[i].is_playing = true
-        --   end
-        -- end
-      -- end
-    end
-
      -- this is a bit of a kludgy way of returning focus back to pattern mode
     if (z == 0) then
       if (x == 1) then
@@ -236,12 +171,12 @@ local function Meadowphysics ()
 
 
   function mp:draw()
-    -- screen.move(4, 8)
-    -- screen.text(ti)
     mp_ui:draw(mp)
-    mp_grid:draw(mp)
   end
 
+  function mp:gridredraw()
+    mp_grid:draw(mp)
+  end
 
 
 
