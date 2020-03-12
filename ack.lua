@@ -16,6 +16,7 @@
 local Beatclock = require "beatclock"
 local clk = Beatclock.new()
 local meadowphysics = include("meadowphysics/lib/engine/core")()
+local scale = include("meadowphysics/lib/engine/scale")
 local g = grid.connect()
 
 local Ack = include("ack/lib/ack")
@@ -33,7 +34,7 @@ end
 
 local function all_notes_off()
   for i = 1, 8 do
-    m:note_off(params:get("voice_" .. i .. "__midi_note"), 100, params:get("midi_out_channel"))
+    m:note_off(scale.notes[i], 100, params:get("midi_out_channel"))
   end
 end
 
@@ -52,14 +53,16 @@ function handle_bang(e) -- Sound making thing goes here!
 end
 
 function make_note(track)
-    midi_note = params:get("voice_" .. track .. "__midi_note")
-    m:note_on(midi_note, 100, params:get("midi_out_channel"))
+    m:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
 end
+
 
 function init()
 
   crow.ii.pullup(true)
   crow.ii.jf.mode(1)
+
+  scale:make_params()
 
   -- meadowphysics.init(16)
   meadowphysics.init(8)
