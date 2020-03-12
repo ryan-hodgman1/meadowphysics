@@ -33,6 +33,8 @@ function scale:make_params()
     action = function() scale:build() end
   }
 
+  scale:build()
+
 end
 
 function scale:build()
