@@ -1,14 +1,6 @@
 setup_params = function(mp)
 
   -- Voices
-    -- params:add{
-    --   type = "option",
-    --   id = "scale",
-    --   name = "scale",
-    --   options = {"major", "minor", "dorian"},
-    --   action = function(value)
-    --   end
-    -- }
 
     -- params:add{
     --   type = "option",
@@ -57,8 +49,7 @@ setup_params = function(mp)
 
 
   for i=1, mp.voice_count do
-    -- print("setup voice params")
-    -- params:add_separator()
+
     local id = "voice_" .. i .. "_"
     local name = "Voice " .. i .. " "
 
