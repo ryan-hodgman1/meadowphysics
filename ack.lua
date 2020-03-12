@@ -104,6 +104,14 @@ function redraw()
   screen.update()
 end
 
+
+function gridredraw()
+  meadowphysics:gridredraw()
+end
+
+gridredrawtimer = metro.init(function() gridredraw() end, 0.02, -1)
+gridredrawtimer:start()
+
 oled_r = metro.init()
 oled_r.time = 0.05 -- 20fps (OLED max)
 oled_r.event = function()
