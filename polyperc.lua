@@ -76,6 +76,7 @@ function init()
     midi_notes_off()
     meadowphysics:handle_tick()
     gridredraw()
+    redraw()
     g:all(0)
   end
   clk:bpm_change(120)
@@ -150,7 +151,7 @@ function init_engine ()
     type="control",id="pan",controlspec=cs_PAN,
     action=function(x) engine.pan(x) end
   }
-  
+
 end
 
 
