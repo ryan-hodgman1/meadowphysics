@@ -56,32 +56,41 @@ function make_midi_note(track)
 end
 
 function init()
-
   crow.ii.pullup(true)
   crow.ii.jf.mode(1)
-
   scale:make_params()
-
   init_engine()
-
   meadowphysics.init(8)
   meadowphysics.on_bang = handle_bang
   meadowphysics.clock = clk
-
   params:add_separator()
   params:add_separator()
+  redraw()
+  gridredraw()
+  clock.transport.start()
+end
 
-
-  clk.on_step = function ()
-    midi_notes_off()
-    meadowphysics:handle_tick()
-    gridredraw()
-    redraw()
-    g:all(0)
+function clock_loop()
+  while true do
+    clock.sync(1/4)
+    pulse()
   end
-  clk:bpm_change(120)
-  clk:start()
+end
 
+function pulse()
+  midi_notes_off()
+  meadowphysics:handle_tick()
+  gridredraw()
+  redraw()
+end
+
+function clock.transport.start()
+  id = clock.run(clock_loop)
+end
+
+function clock.transport.stop()
+  clock.cancel(id)
+  grid_redraw()
 end
 
 function enc()
@@ -96,18 +105,15 @@ function g.key(x, y, z)
   meadowphysics:handle_grid_input(x, y, z)
 end
 
-
 function redraw()
   screen.clear()
   meadowphysics:draw()
   screen.update()
 end
 
-
 function gridredraw()
   meadowphysics:gridredraw()
 end
-
 
 function cleanup ()
 

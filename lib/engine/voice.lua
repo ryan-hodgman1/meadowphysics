@@ -1,6 +1,68 @@
 
 
 create_voice = function(i, mp)
+  local bool = {"no", "yes"}
+  local rules = {"increment", "decrement", "max", "min", "random", "pole", "stop"}
+
+  params:add_group("Voice " .. i, 14)
+
+  params:add {
+    type = "option",
+    id = i .. "_running",
+    name = "running",
+    options = bool
+  }
+
+  params:add{
+    type = "number",
+    id = i .. "_range_low",
+    name = "range low",
+    min=1,
+    max=16, 
+    default = 8,
+  }
+
+  params:add{
+    type = "number",
+    id = i .. "_range_high",
+    name = "range high",
+    min=1,
+    max=16, 
+    default = 8,
+  }
+
+  params:add{
+    type = "number",
+    id = i .. "_clock_division",
+    name = "clock division",
+    min=1,
+    max=8, 
+    default = 1,
+  }
+
+  params:add {
+    type = "option",
+    id = i .. "_type",
+    name = "type",
+    options = {"trigger", "gate"}
+  }
+
+  params:add {
+    type = "option",
+    id = i .. "_rule",
+    name = "rule",
+    options = rules
+  }
+
+  for reset_i=1,8 do
+    params:add {
+      type = "option",
+      id = i .. "_reset_" .. reset_i,
+      name = "resets " .. reset_i,
+      options = bool
+    }
+  end
+
   start_length = 8
   start_ticks = 1
   local v = {}
@@ -98,7 +160,7 @@ create_voice = function(i, mp)
     v.current_step = v.current_cycle_length
     v.current_tick = 1
   end
-
+ 
   v.apply_rule = function(rule)
     if rule == "increment" then
       v.current_cycle_length = v.current_cycle_length + 1
