@@ -63,22 +63,29 @@ create_voice = function(i, mp)
     }
   end
 
-  start_length = 8
-  start_ticks = 1
+  local get = function (param)
+    return params:get(i .. "_" .. param)
+  end
+
+  local set = function (param, value)
+    params:set(i .. "_" .. param, value)
+  end
+
   local v = {}
   v.index = i
-  v.ticks_per_step = start_ticks
+  v.ticks_per_step = get("clock_division")
   v.current_tick = 0
-  v.current_step = start_length
-  v.rule = "increment"
+  v.current_step = get("range_low")
+  v.rule = get("rule")
   v.is_playing = false
   v.target_voices = { false, false, false, false, false, false, false, false }
   v.target_voices[i] = true
-  v.min_cycle_length = start_length
-  v.max_cycle_length = start_length
-  v.current_cycle_length = start_length
-  v.bang_type = "trigger" -- or "gate"
-  v.gate = false
+  v.min_cycle_length = get("range_low")
+  v.max_cycle_length = get("range_high")
+  v.current_cycle_length = get("range_low")
+  v.bang_type = get("type")
+  v.gate = 0 -- 0 or 1
+
   v.on_bang = function() end
 
   v.tick = function()
@@ -86,7 +93,7 @@ create_voice = function(i, mp)
     -- per step, when current_tick hits 0, the current step will step down towards zero.
     -- when it hits zero it resets to a step value determined by it's rule, and emits a bang
 
-    if not v.is_playing then return end
+    -- if get("running") == "no" then return end
 
     -- Reset tick clock and advance step (toward zero) when hitting the clock division
     if (v.current_tick == v.ticks_per_step) then
@@ -96,7 +103,6 @@ create_voice = function(i, mp)
 
     if (v.current_step == 0) then
       v.current_step = v.current_cycle_length
-      v.is_playing = false
     end
 
     if v.current_tick == 0 and v.current_step == v.current_cycle_length and not v.just_triggered then
@@ -108,7 +114,6 @@ create_voice = function(i, mp)
           voice.current_tick = 0
           voice.apply_rule(v.rule)
           voice.current_step = voice.current_cycle_length
-          voice.is_playing = true
         end
       end
     end
@@ -129,7 +134,7 @@ create_voice = function(i, mp)
   end
 
   v.toggle_playback = function()
-    v.is_playing = not v.is_playing
+    if (get("running") == "yes") then set("running", "no") else set("running", "yes") end
   end
 
   v.set_bang_type = function(bang_type)
@@ -144,7 +149,7 @@ create_voice = function(i, mp)
   end
 
   v.bang = function()
-    -- v.is_playing = true
+    -- set("running", "yes")
     if v.bang_type == "gate" then
       v.gate = not v.gate
     end
@@ -193,7 +198,7 @@ create_voice = function(i, mp)
     end
     if rule == "stop" then
       v.target_voices = {}
-      v.is_playing = true
+      v.is_playing = true -- is this needed?
       v.current_step = v.current_cycle_length
     end
   end
