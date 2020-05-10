@@ -1,4 +1,4 @@
-
+local voice_count = 8
 
 create_voice = function(i, mp)
 
@@ -114,16 +114,17 @@ create_voice = function(i, mp)
     end
 
     if v.current_tick == 0 and v.current_step == v.current_cycle_length and not v.just_triggered then
-      for i=1, #v.target_voices do
-        if v.target_voices[i] == true then
+      for i=1, voice_count do
+        if get("reset_" .. i) == 2 then
           local voice = mp.voices[i]
           voice.bang()
           voice.just_triggered = true
           voice.current_tick = 0
-          voice.apply_rule(get("rule"))
+          voice.apply_rule(rules[get("rule")])
           voice.current_step = voice.current_cycle_length
         end
       end
+
     end
 
     v.current_tick = v.current_tick + 1
