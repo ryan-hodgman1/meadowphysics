@@ -126,7 +126,8 @@ local function Meadowphysics ()
       if x > 8 and y > 1 and y < 8 then
         local rules = {"increment", "decrement", "min", "max", "random", "pole", "stop"}
         print("set rule", rules[y-1], " for voice", mp.grid_target_focus)
-        mp.voices[mp.grid_target_focus].rule = rules[y-1]
+        params:set(mp.grid_target_focus .. "_rule", y-1)
+        print(mp.grid_target_focus, "_rule", y-1)
       end
     end
 

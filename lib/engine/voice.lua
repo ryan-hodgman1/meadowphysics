@@ -167,7 +167,6 @@ create_voice = function(i, mp)
   end
 
   v.reset = function ()
-    print("reset voice")
     v.current_step = v.current_cycle_length
     v.current_tick = 1
   end

@@ -69,7 +69,7 @@ function grid:draw(mp)
 
   if (mp.grid_mode == "rule") then
     base_lighting(mp)
-    local rule = mp.voices[mp.grid_target_focus].rule
+    local rule = params:get(mp.grid_target_focus .. "_rule")
     -- Draw the rule glyph
     local glyph = glyphs[rule]
     for yi = 1, 8 do
@@ -83,7 +83,7 @@ function grid:draw(mp)
   g:refresh()
 end
 
-glyphs["increment"] = {
+glyphs[1] = {
   {0,0,0,0,0,0,0,0},
   {0,0,0,1,1,0,0,0},
   {0,0,0,1,1,0,0,0},
@@ -94,7 +94,7 @@ glyphs["increment"] = {
   {0,0,0,0,0,0,0,0}
 }
 
-glyphs["decrement"] ={
+glyphs[2] ={
   {0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0},
   {0,0,0,0,0,0,0,0},
@@ -105,7 +105,7 @@ glyphs["decrement"] ={
   {0,0,0,0,0,0,0,0}
 }
 
-glyphs["min"] ={
+glyphs[3] ={
   {0,0,0,0,0,0,0,0},
   {0,0,0,0,0,1,1,0},
   {0,0,0,0,0,1,1,0},
@@ -116,7 +116,7 @@ glyphs["min"] ={
   {0,0,0,0,0,0,0,0}
 }
 
-glyphs["max"] ={
+glyphs[4] ={
   {0,0,0,0,0,0,0,0},
   {0,1,1,0,0,0,0,0},
   {0,1,1,0,0,0,0,0},
@@ -127,7 +127,7 @@ glyphs["max"] ={
   {0,0,0,0,0,0,0,0}
 }
 
-glyphs["random"] ={
+glyphs[5] ={
   {0,0,0,0,0,0,0,0},
   {0,1,1,0,0,1,1,0},
   {0,1,1,0,0,1,1,0},
@@ -138,7 +138,7 @@ glyphs["random"] ={
   {0,0,0,0,0,0,0,0}
 }
 
-glyphs["pole"] ={
+glyphs[6] ={
   {0,0,0,0,0,0,0,0},
   {0,0,0,1,1,1,1,0},
   {0,0,0,1,1,1,1,0},
@@ -149,7 +149,7 @@ glyphs["pole"] ={
   {0,0,0,0,0,0,0,0}
 }
 
-glyphs["stop"] ={
+glyphs[7] ={
   {0,0,0,0,0,0,0,0},
   {0,1,1,1,1,1,1,0},
   {0,1,1,1,1,1,1,0},
