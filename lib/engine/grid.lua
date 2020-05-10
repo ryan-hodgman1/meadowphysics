@@ -33,17 +33,15 @@ function grid:draw(mp)
     -- Show status of all voices
     for i = 1, #mp.voices do
       voice = mp.voices[i]
-      if (voice.bang_type == "trigger") then
-       g:led(6, i,  4)
-      end
-      if (voice.bang_type == "gate") then
-       g:led(7, i,  4)
+      if (params:get(i.."_clock_division") == 1) then
+        g:led(6, i,  4)
+      else
+        g:led(7, i,  4)
       end
       if (voice.is_playing) then
         g:led(3, i,  4)
       end
-       -- speed (clock division)
-      g:led(8 + voice.ticks_per_step, i,  4)
+      g:led(8 + params:get(i.."_clock_division"), i,  4)
     end
     -- Light up the focused voice
     g:led(1, mp.grid_target_focus,  4)
@@ -59,11 +57,11 @@ function grid:draw(mp)
 	  for i = 1, #mp.voices do
 	    local voice = mp.voices[i]
       -- show cycle range
-      for ci = voice.min_cycle_length, voice.max_cycle_length do
+      for ci = voice.get("range_low"), voice.get("range_high") do 
         g:led(ci, i,  2)
       end
       -- show playhead
-      if voice.is_playing then
+      if voice.get("running") == 2 then
   	    g:led(voice.current_step, i,  4)
       end
 	  end

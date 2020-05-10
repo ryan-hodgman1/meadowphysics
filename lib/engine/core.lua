@@ -141,9 +141,9 @@ local function Meadowphysics ()
       end
 
       -- Pattern Adjustment
-      if (#pressed_keys > 1) then -- Range press in pattern mode
-        mp.voices[y].min_cycle_length = pressed_keys[1]
-        mp.voices[y].max_cycle_length = pressed_keys[#pressed_keys]
+      if (#pressed_keys > 1) then
+        params:set(y .. "_range_low", pressed_keys[1])
+        params:set(y .. "_range_high", pressed_keys[#pressed_keys])
       end
       if (#pressed_keys == 1) then -- Single press in pattern mode
         voices[y].bang()
@@ -151,9 +151,9 @@ local function Meadowphysics ()
         voices[y].current_step = x
         voices[y].current_tick = 0
         voices[y].current_cycle_length = x
-        voices[y].min_cycle_length = x
-        voices[y].max_cycle_length = x
-        voices[y].is_playing = true
+        params:set(y .. "_range_high", x)
+        params:set(y .. "_range_low", x)
+        params:set(y .. "_running", 2)
       end
     end
 
