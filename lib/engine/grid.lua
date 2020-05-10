@@ -3,6 +3,7 @@
 local g = grid.connect()
 local grid = {}
 local glyphs = {}
+local voice_count = 8
 
 local rule_icons = {
   {0,0,0,0,0,0,0,0},-- o
@@ -46,9 +47,12 @@ function grid:draw(mp)
     -- Light up the focused voice
     g:led(1, mp.grid_target_focus,  4)
     -- Show all the voices targeted by this voice
-    for ti = 1, #mp.voices[mp.grid_target_focus].target_voices do
-      if mp.voices[mp.grid_target_focus].target_voices[ti] == true then
+    for ti = 1, voice_count do
+      if (params:get(mp.grid_target_focus .. "_reset_" .. ti) == 2) then
         g:led(4, ti,  4)
+      end
+      if params:get(ti .. "_running") == 2 then
+        g:led(3, ti,  4)
       end
     end
   end
@@ -61,7 +65,7 @@ function grid:draw(mp)
         g:led(ci, i,  2)
       end
       -- show playhead
-      if voice.get("running") == 2 then
+      if voice.isRunning() then
   	    g:led(voice.current_step, i,  4)
       end
 	  end
