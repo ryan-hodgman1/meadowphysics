@@ -24,24 +24,13 @@ function meadowphysics_ui.new (mp)
       local gx = offset_x
       local gy = offset_y + (padding * (i-1))
       for vi = 1, 16 do
+        if voice.current_step == vi and voice.isRunning() then 
+          screen.level(16)
+        end
         screen.rect(gx, gy, 2, 2)
         screen.fill()
         gx = gx + padding
-      end
-      if voice.current_step >= 1 then
-        local x = ((voice.current_step - 1) * padding) + offset_x
-        local y = ((i - 1) * padding) + offset_y
-        if voice.current_step == voice.current_cycle_length and voice.isRunning() then
-          screen.level(16)
-        elseif voice.isRunning() then
-          screen.level(4)
-        end
-        -- screen.move(x, y)
-        screen.rect(x, y, 2, 2)
-        screen.fill()
-        screen.level(3)
-
-
+        screen.level(1)
       end
     end
   end
