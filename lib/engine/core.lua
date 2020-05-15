@@ -7,10 +7,8 @@ local function Meadowphysics ()
   local setup_params = include("meadowphysics/lib/engine/parameters")
   local ui = include("meadowphysics/lib/engine/ui")
   local mp_grid = include("meadowphysics/lib/engine/grid")
-  local bc = require "beatclock"
-  local g = grid.connect()
-  local gridbuf = require "gridbuf"
-  local gbuf = gridbuf.new(16, 8)
+  local scale = include("meadowphysics/lib/engine/scale")
+  local MusicUtil = require "musicutil"
 
   mp.grid_mode = "pattern"
   local mp_ui = ui.new(mp)
@@ -19,24 +17,43 @@ local function Meadowphysics ()
   local voices = {}
   mp.voices = voices
 
-  mp.init = function (voice_count)
-    mp.voice_count = voice_count
+  mp.init = function ()
+    scale:make_params()
+    mp.voice_count = 8
     setup_params(mp)
-    for i=1,voice_count do
+    for i=1,mp.voice_count do
       voices[i] = create_voice(i, mp)
       local voice = voices[i]
-      voice.on_bang = function (bang)
-        mp.on_bang(bang)
+      voice.on_bang = function ()
+        local note = scale.notes[i]
+        local hz = MusicUtil.note_num_to_freq(note)
+        print(params:get(i .. "_type"))
       end
     end
+    -- midi notes setup
+    m = midi.connect()
+
     -- grid and screen metro
-    mp.redrawtimer = metro.init(function() gridredraw(); redraw() end, 0.02, -1)
+    mp.redrawtimer = metro.init(function() mp:gridredraw(); redraw() end, 0.02, -1)
     mp.redrawtimer:start()
     -- global clock
     function clock.transport.start() mp.clock_id = clock.run(mp.clock_loop) end
     function clock.transport.stop() clock.cancel(mp.clock_id) end
     clock.transport.start()
   end
+
+  function make_midi_note(track) 
+    m:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
+  end
+
+  notes = {}
+
+function midi_notes_off()
+  for i = 1, 8 do
+    m:note_off(scale.notes[i], 100, params:get("midi_out_channel"))
+  end
+end
+
 
   mp.clock_loop = function()
     while true do
@@ -46,27 +63,13 @@ local function Meadowphysics ()
     end
   end
 
-
-  mp.on_bang = function (f)
-  end
-
   function mp:handle_tick()
     for i=1,mp.voice_count do
       voices[i].tick()
     end
-    mp.should_redraw = true
-     -- globals from inititating script
-    -- gridredraw()
-    -- redraw()
   end
-
 
   function mp:handle_key (n, z)
-
-  end
-
-
-  function mp:handle_enc()
 
   end
 
@@ -120,11 +123,11 @@ local function Meadowphysics ()
       end
 
       if (x == 6) then
-        mp.voices[y].set_bang_type("trigger")
+        mp.voices[y].set_bang_type(1)
       end
 
       if (x == 7) then
-        mp.voices[y].set_bang_type("gate")
+        mp.voices[y].set_bang_type(2)
       end
 
       if (x > 8) then

@@ -14,23 +14,42 @@
 --
 
 local meadowphysics = include("meadowphysics/lib/engine/core")()
-local scale = include("meadowphysics/lib/engine/scale")
 local g = grid.connect()
 local MusicUtil = require "musicutil"
 
 engine.name = 'PolyPerc'
 
-notes = {}
-
-local m = midi.connect()
-m.event = function(data)
-  clk:process_midi(data)
+function init()
+  meadowphysics.init()
+  init_engine()
 end
 
-function midi_notes_off()
-  for i = 1, 8 do
-    m:note_off(scale.notes[i], 100, params:get("midi_out_channel"))
-  end
+function key(n,z)
+  meadowphysics:handle_key(n,z)
+end
+
+function g.key(x, y, z) 
+  meadowphysics:handle_grid_input(x, y, z)
+end
+
+function redraw()
+  screen.clear()
+  meadowphysics:draw()
+  screen.update()
+end
+
+-- voicing
+
+function trigger(note_num, hz)
+  engine.hz(hz)
+end
+
+function gate_hi(note)
+
+end
+
+function gate_low(note)
+
 end
 
 function handle_bang(e) -- Sound making thing goes here!
@@ -46,45 +65,7 @@ function handle_bang(e) -- Sound making thing goes here!
   end
 end
 
-function make_midi_note(track)
-    m:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
-end
 
-function init()
-  scale:make_params()
-  init_engine()
-  meadowphysics.init(8)
-  meadowphysics.on_bang = handle_bang
-  redraw()
-  gridredraw()
-end
-
-
-function enc()
-  meadowphysics:handle_enc()
-end
-
-function key(n,z)
-  meadowphysics:handle_key(n,z)
-end
-
-function g.key(x, y, z)
-  meadowphysics:handle_grid_input(x, y, z)
-end
-
-function redraw()
-  screen.clear()
-  meadowphysics:draw()
-  screen.update()
-end
-
-function gridredraw()
-  meadowphysics:gridredraw()
-end
-
-function cleanup ()
-
-end
 
 function init_engine ()
 

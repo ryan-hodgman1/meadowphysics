@@ -34,7 +34,7 @@ function grid:draw(mp)
     -- Show status of all voices
     for i = 1, #mp.voices do
       voice = mp.voices[i]
-      if (params:get(i.."_clock_division") == 1) then
+      if (params:get(i.."_type") == 1) then
         g:led(6, i,  4)
       else
         g:led(7, i,  4)

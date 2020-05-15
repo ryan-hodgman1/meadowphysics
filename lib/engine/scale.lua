@@ -2,9 +2,7 @@ local MusicUtil = require "musicutil"
 
 scale = {}
 
-scale.notes = {
-
-}
+scale.notes = {}
 
 function scale:make_params()
 
