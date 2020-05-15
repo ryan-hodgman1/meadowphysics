@@ -29,24 +29,25 @@ local function Meadowphysics ()
         mp.on_bang(bang)
       end
     end
+
+    -- grid and screen metro
+    redrawtimer = metro.init(function() gridredraw(); redraw() end, 0.02, -1)
+    redrawtimer:start()
+
+
   end
 
   mp.on_bang = function (f)
   end
 
-  local ti = 0
   function mp:handle_tick()
-    -- print(ti, "-----------------------------")
-    ti = ti + 1
-    if ti>16 then ti = 1 end
-    -- Pass a tick to each voice
     for i=1,mp.voice_count do
       voices[i].tick()
     end
     mp.should_redraw = true
      -- globals from inititating script
-    gridredraw()
-    redraw()
+    -- gridredraw()
+    -- redraw()
   end
 
 

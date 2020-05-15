@@ -20,8 +20,6 @@ local MusicUtil = require "musicutil"
 
 engine.name = 'PolyPerc'
 
-local scale_names = {}
-
 notes = { 69, 71, 72, 74, 76, 77, 79, 81}
 
 local m = midi.connect()
@@ -29,7 +27,7 @@ m.event = function(data)
   clk:process_midi(data)
 end
 
-local function midi_notes_off()
+function midi_notes_off()
   for i = 1, 8 do
     m:note_off(scale.notes[i], 100, params:get("midi_out_channel"))
   end
@@ -54,8 +52,6 @@ function make_midi_note(track)
 end
 
 function init()
-  crow.ii.pullup(true)
-  crow.ii.jf.mode(1)
   scale:make_params()
   init_engine()
   meadowphysics.init(8)
@@ -70,13 +66,9 @@ end
 function clock_loop()
   while true do
     clock.sync(1/4)
-    pulse()
+	midi_notes_off()
+  	meadowphysics:handle_tick()
   end
-end
-
-function pulse()
-  midi_notes_off()
-  meadowphysics:handle_tick()
 end
 
 function clock.transport.start()
