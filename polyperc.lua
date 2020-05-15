@@ -40,31 +40,17 @@ end
 
 -- voicing
 
-function trigger(note_num, hz)
+function trigger(note_num, hz, voice)
   engine.hz(hz)
 end
 
-function gate_hi(note)
-
+function gate_high(note_num, hz, voice)
+  engine.hz(hz)
 end
 
-function gate_low(note)
-
+function gate_low(note_num, hz, voice)
+  engine.hz(hz)
 end
-
-function handle_bang(e) -- Sound making thing goes here!
-  if e.type == 'trigger' then
-    engine.hz(MusicUtil.note_num_to_freq(scale.notes[e.voice]))
-    make_midi_note(e.voice)
-  end
-  if e.type == 'gate' and e.value == 1 then
-    -- print("GATE HIGH", e.voice)
-  end
-  if e.type == 'gate' and e.value == 0 then
-    -- print("GATE LOW", e.voice)
-  end
-end
-
 
 
 function init_engine ()

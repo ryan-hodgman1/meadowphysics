@@ -9,7 +9,8 @@ local function Meadowphysics ()
   local mp_grid = include("meadowphysics/lib/engine/grid")
   local scale = include("meadowphysics/lib/engine/scale")
   local MusicUtil = require "musicutil"
-
+  m = midi.connect()
+  
   mp.grid_mode = "pattern"
   local mp_ui = ui.new(mp)
   mp.should_redraw = true
@@ -24,14 +25,37 @@ local function Meadowphysics ()
     for i=1,mp.voice_count do
       voices[i] = create_voice(i, mp)
       local voice = voices[i]
+
       voice.on_bang = function ()
-        local note = scale.notes[i]
-        local hz = MusicUtil.note_num_to_freq(note)
-        print(params:get(i .. "_type"))
+        local note_num = scale.notes[i]
+        local hz = MusicUtil.note_num_to_freq(note_num)
+        if params:get(i .. "_type") == 1 then
+          if (params:get('output') == 1 or params:get('output') == 3) then
+            trigger(note_num, hz, i)
+          end
+          if (params:get('output') == 2 or params:get('output') == 3) then
+            make_midi_note(i)
+          end
+        end
+        if params:get(i .. "_type") == 2 then
+          if(voice.gate == 1) then
+            if (params:get('output') == 1 or params:get('output') == 3) then
+              gate_high(note_num, hz, i)
+            end
+            if (params:get('output') == 2 or params:get('output') == 3) then
+              open_midi_gate(i)
+            end
+          else
+            if (params:get('output') == 1 or params:get('output') == 3) then
+              gate_low(note_num, hz, i)
+            end
+            if (params:get('output') == 2 or params:get('output') == 3) then
+              close_midi_gate(i)
+            end
+          end
+        end
       end
     end
-    -- midi notes setup
-    m = midi.connect()
 
     -- grid and screen metro
     mp.redrawtimer = metro.init(function() mp:gridredraw(); redraw() end, 0.02, -1)
@@ -46,14 +70,24 @@ local function Meadowphysics ()
     m:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
   end
 
+  function open_midi_gate(track) 
+    print('note on')
+    m:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
+  end
+
+  function close_midi_gate(track)
+    print("note off")
+    m:note_off(scale.notes[track], 100, params:get("midi_out_channel"))
+  end
+
+
   notes = {}
 
-function midi_notes_off()
-  for i = 1, 8 do
-    m:note_off(scale.notes[i], 100, params:get("midi_out_channel"))
+  function midi_notes_off()
+    for i = 1, mp.voice_count do
+      m:note_off(scale.notes[i], 100, params:get("midi_out_channel"))
+    end
   end
-end
-
 
   mp.clock_loop = function()
     while true do

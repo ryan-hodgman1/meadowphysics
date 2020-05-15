@@ -156,8 +156,11 @@ create_voice = function(i, mp)
 
   v.bang = function()
     set("running", 2)
-    if v.bang_type == "gate" then
-      v.gate = not v.gate
+    if get("type") == 2 then
+      if v.gate == 0 then
+        v.gate = 1
+      else v.gate = 0 
+      end
     end
     local bang = {}
     bang.type = v.bang_type
