@@ -13,8 +13,6 @@
 --
 --
 
-local Beatclock = require "beatclock"
-local clk = Beatclock.new()
 local meadowphysics = include("meadowphysics/lib/engine/core")()
 local scale = include("meadowphysics/lib/engine/scale")
 local g = grid.connect()
@@ -62,7 +60,6 @@ function init()
   init_engine()
   meadowphysics.init(8)
   meadowphysics.on_bang = handle_bang
-  meadowphysics.clock = clk
   params:add_separator()
   params:add_separator()
   redraw()
@@ -80,8 +77,6 @@ end
 function pulse()
   midi_notes_off()
   meadowphysics:handle_tick()
-  gridredraw()
-  redraw()
 end
 
 function clock.transport.start()
@@ -91,6 +86,7 @@ end
 function clock.transport.stop()
   clock.cancel(id)
   grid_redraw()
+  redraw()
 end
 
 function enc()

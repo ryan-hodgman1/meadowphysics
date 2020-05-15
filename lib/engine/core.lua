@@ -44,6 +44,9 @@ local function Meadowphysics ()
       voices[i].tick()
     end
     mp.should_redraw = true
+     -- globals from inititating script
+    gridredraw()
+    redraw()
   end
 
 
