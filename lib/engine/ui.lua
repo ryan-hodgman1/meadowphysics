@@ -25,7 +25,7 @@ function meadowphysics_ui.new (mp)
       local gy = offset_y + (padding * (i-1))
       for vi = 1, 16 do
         if vi >= params:get(i .. "_range_low") and vi <= params:get(i .. "_range_high") then
-          screen.level(2)
+          screen.level(3)
         end
         if voice.current_step == vi and voice.isRunning() then 
           screen.level(16)
