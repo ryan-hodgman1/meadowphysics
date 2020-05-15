@@ -20,7 +20,7 @@ local MusicUtil = require "musicutil"
 
 engine.name = 'PolyPerc'
 
-notes = { 69, 71, 72, 74, 76, 77, 79, 81}
+notes = {}
 
 local m = midi.connect()
 m.event = function(data)
@@ -37,7 +37,6 @@ function handle_bang(e) -- Sound making thing goes here!
   if e.type == 'trigger' then
     engine.hz(MusicUtil.note_num_to_freq(scale.notes[e.voice]))
     make_midi_note(e.voice)
-    crow.ii.jf.play_note((e.voice-60)/12,5)
   end
   if e.type == 'gate' and e.value == 1 then
     -- print("GATE HIGH", e.voice)
@@ -56,30 +55,10 @@ function init()
   init_engine()
   meadowphysics.init(8)
   meadowphysics.on_bang = handle_bang
-  params:add_separator()
-  params:add_separator()
   redraw()
   gridredraw()
-  clock.transport.start()
 end
 
-function clock_loop()
-  while true do
-    clock.sync(1/4)
-	midi_notes_off()
-  	meadowphysics:handle_tick()
-  end
-end
-
-function clock.transport.start()
-  id = clock.run(clock_loop)
-end
-
-function clock.transport.stop()
-  clock.cancel(id)
-  grid_redraw()
-  redraw()
-end
 
 function enc()
   meadowphysics:handle_enc()

@@ -29,13 +29,23 @@ local function Meadowphysics ()
         mp.on_bang(bang)
       end
     end
-
     -- grid and screen metro
-    redrawtimer = metro.init(function() gridredraw(); redraw() end, 0.02, -1)
-    redrawtimer:start()
-
-
+    mp.redrawtimer = metro.init(function() gridredraw(); redraw() end, 0.02, -1)
+    mp.redrawtimer:start()
+    -- global clock
+    function clock.transport.start() mp.clock_id = clock.run(mp.clock_loop) end
+    function clock.transport.stop() clock.cancel(mp.clock_id) end
+    clock.transport.start()
   end
+
+  mp.clock_loop = function()
+    while true do
+      clock.sync(1/4)
+    -- midi_notes_off()
+      mp.handle_tick()
+    end
+  end
+
 
   mp.on_bang = function (f)
   end
