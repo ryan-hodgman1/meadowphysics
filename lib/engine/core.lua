@@ -27,7 +27,7 @@ local function Meadowphysics ()
       local voice = voices[i]
 
       voice.on_bang = function ()
-        local note_num = scale.notes[i]
+        local note_num = scale.notes[9-i]
         local hz = MusicUtil.note_num_to_freq(note_num)
         if params:get(i .. "_type") == 1 then
           if (params:get('output') == 1 or params:get('output') == 3) then
