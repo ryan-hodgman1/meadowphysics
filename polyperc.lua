@@ -16,11 +16,13 @@
 local meadowphysics = include("meadowphysics/lib/engine/core")()
 local g = grid.connect()
 local MusicUtil = require "musicutil"
+hs = include('lib/halfsecond')
 
 engine.name = 'PolyPerc'
 
 function init()
   meadowphysics.init()
+  params:add_separator()
   init_engine()
 end
 
@@ -91,6 +93,8 @@ function init_engine ()
     type="control",id="pan",controlspec=cs_PAN,
     action=function(x) engine.pan(x) end
   }
+
+  hs.init()
 
 end
 

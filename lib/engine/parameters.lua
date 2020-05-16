@@ -37,6 +37,8 @@ setup_params = function(mp)
     options = {"1/4", "1/8", "1/12", "1/16"}
   }
 
+  params:add_separator()
+
 end
 
 return setup_params
