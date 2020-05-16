@@ -30,6 +30,13 @@ setup_params = function(mp)
     end
   }
 
+  params:add {
+    type = "option",
+    id = "clock_division",
+    name = "clock division",
+    options = {"1/4", "1/8", "1/12", "1/16"}
+  }
+
 end
 
 return setup_params

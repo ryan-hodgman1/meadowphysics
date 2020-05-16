@@ -91,7 +91,7 @@ local function Meadowphysics ()
 
   mp.clock_loop = function()
     while true do
-      clock.sync(1/4)
+      clock.sync(1/(params:get("clock_division")*4))
     -- midi_notes_off()
       mp.handle_tick()
     end
