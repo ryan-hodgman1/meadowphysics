@@ -119,6 +119,7 @@ local function Meadowphysics ()
   mp.grid_voice_bounds_key = false -- are one of the position columns pressed?
   mp.grid_range_start = false
 
+  -- Generate an empty table of grid state
   mp.grid_key_state = {}
   for i = 1, 8 do
     mp.grid_key_state[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
@@ -167,8 +168,15 @@ local function Meadowphysics ()
       end
 
       if (x > 8) then
-        print("set clock division for ", y, "to be ", x - 8)
-        mp.voices[y].set_clock_division(x - 8)
+        -- Get the highest and lowest division keys pressed
+        local pushed_division_keys = {}
+        for di=1,8 do
+          if (mp.grid_key_state[1][di+8]) == 1 then
+            table.insert(pushed_division_keys, di)
+          end
+        end
+        params:set(y .. "_clock_division_low", pushed_division_keys[1])
+        params:set(y .. "_clock_division_high", pushed_division_keys[#pushed_division_keys])
       end
 
 

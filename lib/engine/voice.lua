@@ -14,7 +14,7 @@ create_voice = function(i, mp)
   local bool = {"no", "yes"}
   local rules = {"increment", "decrement", "max", "min", "random", "pole", "stop"}
 
-  params:add_group("Voice " .. i, 6 + mp.voice_count)
+  params:add_group("Voice " .. i, 7 + mp.voice_count)
 
   params:add {
     type = "option",
@@ -42,12 +42,22 @@ create_voice = function(i, mp)
     default = 8,
   }
 
+
   params:add{
     type = "number",
-    id = i .. "_clock_division",
-    name = "clock division",
+    id = i .. "_clock_division_low",
+    name = "clock div low",
     min=1,
-    max=8, 
+    max=16, 
+    default = 1,
+  }
+  
+    params:add{
+    type = "number",
+    id = i .. "_clock_division_high",
+    name = "clock div high",
+    min=1,
+    max=16, 
     default = 1,
   }
 
@@ -82,6 +92,7 @@ create_voice = function(i, mp)
   v.current_step = get("range_low")
   v.target_voices = { false, false, false, false, false, false, false, false }
   v.current_cycle_length = get("range_low")
+  v.current_clock_division = get("clock_division_low")
   v.bang_type = get("type")
   v.gate = 0 -- 0 or 1
   v.get = get
@@ -105,7 +116,7 @@ create_voice = function(i, mp)
     if not v.isRunning() then return end
 
     -- Reset tick clock and advance step (toward zero) when hitting the clock division
-    if (v.current_tick == get("clock_division")) then
+    if (v.current_tick == v.current_clock_division) then
       v.current_tick = 0
       v.current_step = v.current_step - 1
     end
@@ -149,12 +160,6 @@ create_voice = function(i, mp)
     set("type", bang_type)
   end
 
-  v.set_clock_division = function(division)
-    print("set ticks per step", division)
-    v.current_tick = division
-    set("clock_division", division)
-  end
-
   v.bang = function()
     set("running", 2)
     if get("type") == 2 then
@@ -181,28 +186,45 @@ create_voice = function(i, mp)
       if v.current_cycle_length > get("range_high") then
         v.current_cycle_length = get("range_low")
       end
+      v.current_clock_division = v.current_clock_division + 1
+      if v.current_clock_division > get("clock_division_high") then
+        v.current_clock_division = get("clock_division_low")
+      end
     end
     if rule == "decrement" then
       v.current_cycle_length = v.current_cycle_length - 1
       if v.current_cycle_length < get("range_low") then
         v.current_cycle_length = get("range_high")
       end
+      v.current_clock_division = v.current_clock_division - 1
+      if v.current_clock_division < get("clock_division_low") then
+        v.current_clock_division = get("clock_division_high")
+      end
     end
     if rule == "max" then
       v.current_cycle_length = get("range_high")
+      v.current_clock_division = get("clock_division_high")
     end
     if rule == "min" then
       v.current_cycle_length = get("range_low")
+      v.current_clock_division = get("clock_division_low")
     end
     if rule == "random" then
       local delta = get("range_high") - get("range_low")
       v.current_cycle_length = get("range_low") + math.random(delta)
+      local div_delta = get("clock_division_high") - get("clock_division_low")
+      v.current_clock_division = get("clock_division_low") + math.random(div_delta)
     end
     if rule == "pole" then
       if v.current_cycle_length == get("range_high") then
         v.current_cycle_length = get("range_low")
       else
         v.current_cycle_length = get("range_high")
+      end
+      if v.current_clock_division == get("clock_division_high") then
+        v.current_clock_division = get("clock_division_low")
+      else
+        v.current_clock_division = get("clock_division_high")
       end
     end
     if rule == "stop" then

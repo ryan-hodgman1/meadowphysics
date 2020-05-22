@@ -42,7 +42,11 @@ function grid:draw(mp)
       if (voice.is_playing) then
         g:led(3, i,  4)
       end
-      g:led(8 + params:get(i.."_clock_division"), i,  4)
+      g:led(8 + params:get(i.."_clock_division_high"), i,  4)
+      for div_i = params:get(i.."_clock_division_low"), params:get(i.."_clock_division_high") do 
+        g:led(div_i+8, i,  2)
+      end
+      g:led(8 + voice.current_clock_division, i,  4)
     end
     -- Light up the focused voice
     g:led(1, mp.grid_target_focus,  4)
