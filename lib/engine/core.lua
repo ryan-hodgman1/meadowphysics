@@ -120,11 +120,11 @@ local function Meadowphysics ()
   mp.grid_range_start = false
 
   mp.grid_key_state = {}
+  for i = 1, 8 do
+    mp.grid_key_state[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+  end
 
   function mp:handle_grid_input(x, y, z)
-    for i = 1, mp.voice_count do
-      mp.grid_key_state[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
-    end
 
     mp.grid_key_state[y][x] = z
 
