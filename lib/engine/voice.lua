@@ -14,13 +14,14 @@ create_voice = function(i, mp)
   local bool = {"no", "yes"}
   local rules = {"increment", "decrement", "max", "min", "random", "pole", "stop"}
 
-  params:add_group("Voice " .. i, 14)
+  params:add_group("Voice " .. i, 6 + mp.voice_count)
 
   params:add {
     type = "option",
     id = i .. "_running",
     name = "running",
-    options = bool
+    options = bool,
+    default = 1
   }
 
   params:add{
@@ -64,7 +65,7 @@ create_voice = function(i, mp)
     options = rules
   }
 
-  for reset_i=1,8 do
+  for reset_i=1, mp.voice_count do
     params:add {
       type = "option",
       id = i .. "_reset_" .. reset_i,
@@ -114,7 +115,7 @@ create_voice = function(i, mp)
     end
 
     if v.current_tick == 0 and v.current_step == v.current_cycle_length and not v.just_triggered then
-      for i=1, voice_count do
+      for i=1, mp.voice_count do
         if get("reset_" .. i) == 2 then
           local voice = mp.voices[i]
           voice.bang()

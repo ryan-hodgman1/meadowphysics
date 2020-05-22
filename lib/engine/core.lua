@@ -27,8 +27,12 @@ local function Meadowphysics ()
       local voice = voices[i]
 
       voice.on_bang = function ()
-        local note_num = scale.notes[9-i]
+        
+        -- Generate note/hz
+        local note_num = scale.notes[mp.voice_count + 1 - i]
         local hz = MusicUtil.note_num_to_freq(note_num)
+        
+        -- If the voice type is a trigger
         if params:get(i .. "_type") == 1 then
           if (params:get('output') == 1 or params:get('output') == 3) then
             trigger(note_num, hz, i)
@@ -37,6 +41,8 @@ local function Meadowphysics ()
             make_midi_note(i)
           end
         end
+        
+        -- If the voice type is a gate
         if params:get(i .. "_type") == 2 then
           if(voice.gate == 1) then
             if (params:get('output') == 1 or params:get('output') == 3) then
@@ -54,6 +60,7 @@ local function Meadowphysics ()
             end
           end
         end
+        
       end
     end
 
@@ -112,23 +119,18 @@ local function Meadowphysics ()
   mp.grid_voice_bounds_key = false -- are one of the position columns pressed?
   mp.grid_range_start = false
 
-  mp.grid_key_state = {
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-    {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
-  }
+  mp.grid_key_state = {}
 
   function mp:handle_grid_input(x, y, z)
+    for i = 1, mp.voice_count do
+      mp.grid_key_state[i] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+    end
+
     mp.grid_key_state[y][x] = z
 
     mp.grid_mode = "pattern"
 
-    for i = 1, 8 do -- each voices row
+    for i = 1, mp.voice_count do -- each voices row
 
       if (mp.grid_key_state[i][1] == 1 and mp.grid_key_state[i][2] == 0) then
         print("VOICE MODE")
