@@ -13,32 +13,12 @@
 --
 --
 
-local meadowphysics = include("meadowphysics/lib/engine/core")()
+local meadowphysics = include("meadowphysics/lib/mp/core")()
 local g = grid.connect()
 local MusicUtil = require "musicutil"
-hs = include('lib/halfsecond')
+local hs = include('lib/halfsecond')
 
 engine.name = 'PolyPerc'
-
-function init()
-  meadowphysics.init()
-  params:add_separator()
-  init_engine()
-end
-
-function key(n,z)
-  meadowphysics:handle_key(n,z)
-end
-
-function g.key(x, y, z) 
-  meadowphysics:handle_grid_input(x, y, z)
-end
-
-function redraw()
-  screen.clear()
-  meadowphysics:draw()
-  screen.update()
-end
 
 -- voicing
 
@@ -56,8 +36,6 @@ end
 
 
 function init_engine ()
-
-  -- Engine Params
   cs_AMP = controlspec.new(0,1,'lin',0,0.5,'')
   params:add{
     type="control",id="amp",controlspec=cs_AMP,
@@ -93,9 +71,30 @@ function init_engine ()
     type="control",id="pan",controlspec=cs_PAN,
     action=function(x) engine.pan(x) end
   }
-
   hs.init()
-
 end
 
 
+
+
+-- core stuff
+
+function init()
+  meadowphysics.init()
+  params:add_separator()
+  init_engine()
+end
+
+function key(n,z)
+  meadowphysics:handle_key(n,z)
+end
+
+function g.key(x, y, z) 
+  meadowphysics:handle_grid_input(x, y, z)
+end
+
+function redraw()
+  screen.clear()
+  meadowphysics:draw()
+  screen.update()
+end

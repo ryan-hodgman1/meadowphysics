@@ -3,11 +3,11 @@
 local function Meadowphysics ()
   local mp = {}
 
-  local create_voice = include("meadowphysics/lib/engine/voice")
-  local setup_params = include("meadowphysics/lib/engine/parameters")
-  local ui = include("meadowphysics/lib/engine/ui")
-  local mp_grid = include("meadowphysics/lib/engine/grid")
-  local scale = include("meadowphysics/lib/engine/scale")
+  local create_voice = include("meadowphysics/lib/mp/voice")
+  local setup_params = include("meadowphysics/lib/mp/parameters")
+  local ui = include("meadowphysics/lib/mp/ui")
+  local mp_grid = include("meadowphysics/lib/mp/grid")
+  local scale = include("meadowphysics/lib/mp/scale")
   local MusicUtil = require "musicutil"
   m = midi.connect()
   
@@ -65,7 +65,7 @@ local function Meadowphysics ()
     end
 
     -- grid and screen metro
-    mp.redrawtimer = metro.init(function() mp:gridredraw(); redraw() end, 0.02, -1)
+    mp.redrawtimer = metro.init(function() mp:gridredraw(); redraw() end, (1/15), -1)
     mp.redrawtimer:start()
     -- global clock
     function clock.transport.start() mp.clock_id = clock.run(mp.clock_loop) end
@@ -171,7 +171,7 @@ local function Meadowphysics ()
         -- Get the highest and lowest division keys pressed
         local pushed_division_keys = {}
         for di=1,8 do
-          if (mp.grid_key_state[1][di+8]) == 1 then
+          if (mp.grid_key_state[y][di+8]) == 1 then
             table.insert(pushed_division_keys, di)
           end
         end

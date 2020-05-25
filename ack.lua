@@ -13,10 +13,10 @@
 --
 --
 
-local meadowphysics = include("meadowphysics/lib/engine/core")()
+local meadowphysics = include("meadowphysics/lib/mp/core")()
 local g = grid.connect()
 
--- engine
+-- voicing
 
 local Ack = include("ack/lib/ack")
 engine.name = 'Ack'
@@ -39,7 +39,10 @@ function init_engine ()
   end
 end
 
--- meadowphysics
+
+
+
+-- core stuff
 
 function init()
   meadowphysics.init()
