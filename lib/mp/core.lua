@@ -9,7 +9,8 @@ local function Meadowphysics ()
   local mp_grid = include("meadowphysics/lib/mp/grid")
   local scale = include("meadowphysics/lib/mp/scale")
   local MusicUtil = require "musicutil"
-  m = midi.connect()
+
+  mp.midi_out_device = midi.connect(1)
   
   mp.grid_mode = "pattern"
   local mp_ui = ui.new(mp)
@@ -22,6 +23,7 @@ local function Meadowphysics ()
     scale:make_params()
     mp.voice_count = 8
     setup_params(mp)
+
     for i=1,mp.voice_count do
       voices[i] = create_voice(i, mp)
       local voice = voices[i]
@@ -35,10 +37,10 @@ local function Meadowphysics ()
         -- If the voice type is a trigger
         if params:get(i .. "_type") == 1 then
           if (params:get('output') == 1 or params:get('output') == 3) then
-            trigger(note_num, hz, i)
+            trigger(note_num, hz, i) -- global defined by main script
           end
           if (params:get('output') == 2 or params:get('output') == 3) then
-            make_midi_note(i)
+            midi_note_on(i)
           end
         end
         
@@ -46,26 +48,25 @@ local function Meadowphysics ()
         if params:get(i .. "_type") == 2 then
           if(voice.gate == 1) then
             if (params:get('output') == 1 or params:get('output') == 3) then
-              gate_high(note_num, hz, i)
+              gate_high(note_num, hz, i) -- global defined by main script
             end
             if (params:get('output') == 2 or params:get('output') == 3) then
-              open_midi_gate(i)
+              midi_note_on(i)
             end
           else
             if (params:get('output') == 1 or params:get('output') == 3) then
-              gate_low(note_num, hz, i)
+              gate_low(note_num, hz, i) -- global defined by main script
             end
             if (params:get('output') == 2 or params:get('output') == 3) then
-              close_midi_gate(i)
+              midi_note_off(i)
             end
           end
         end
-        
       end
     end
 
     -- grid and screen metro
-    mp.redrawtimer = metro.init(function() mp:gridredraw(); redraw() end, (1/15), -1)
+    mp.redrawtimer = metro.init(function() redraw() end, (1/15), -1)
     mp.redrawtimer:start()
     -- global clock
     function clock.transport.start() mp.clock_id = clock.run(mp.clock_loop) end
@@ -73,18 +74,13 @@ local function Meadowphysics ()
     clock.transport.start()
   end
 
-  function make_midi_note(track) 
-    m:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
+  function midi_note_on(track)
+    mp.midi_out_device:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
   end
 
-  function open_midi_gate(track) 
-    print('note on')
-    m:note_on(scale.notes[track], 100, params:get("midi_out_channel"))
-  end
 
-  function close_midi_gate(track)
-    print("note off")
-    m:note_off(scale.notes[track], 100, params:get("midi_out_channel"))
+  function midi_note_off(track)
+    mp.midi_out_device:note_off(scale.notes[track], 100, params:get("midi_out_channel"))
   end
 
 
@@ -92,14 +88,16 @@ local function Meadowphysics ()
 
   function midi_notes_off()
     for i = 1, mp.voice_count do
-      m:note_off(scale.notes[i], 100, params:get("midi_out_channel"))
+      if (params:get(i.."_type") == 1) then midi_note_off(i) end
     end
   end
 
   mp.clock_loop = function()
     while true do
       clock.sync(1/(params:get("clock_division")*4))
-    -- midi_notes_off()
+      if (params:get('output') == 2 or params:get('output') == 3 and false) then
+        midi_notes_off()
+      end
       mp.handle_tick()
     end
   end
@@ -108,6 +106,7 @@ local function Meadowphysics ()
     for i=1,mp.voice_count do
       voices[i].tick()
     end
+    mp:gridredraw()
   end
 
   function mp:handle_key (n, z)
@@ -134,13 +133,11 @@ local function Meadowphysics ()
     for i = 1, mp.voice_count do -- each voices row
 
       if (mp.grid_key_state[i][1] == 1 and mp.grid_key_state[i][2] == 0) then
-        print("VOICE MODE")
         mp.grid_mode = "voice"
         mp.grid_target_focus = i
       end
 
       if (mp.grid_key_state[i][1] == 1 and mp.grid_key_state[i][2] == 1) then
-        print("RULE MODE")
         mp.grid_mode = "rule"
         mp.grid_target_focus = i
       end
@@ -151,7 +148,6 @@ local function Meadowphysics ()
     if (mp.grid_mode == "voice" and z == 1) then
 
       if (x == 3) then
-        print("toggle playback of ", y)
         mp.voices[y].toggle_playback()
       end
 
@@ -177,6 +173,8 @@ local function Meadowphysics ()
         end
         params:set(y .. "_clock_division_low", pushed_division_keys[1])
         params:set(y .. "_clock_division_high", pushed_division_keys[#pushed_division_keys])
+        mp.voices[y].current_clock_division = pushed_division_keys[1]
+        mp.voices[y].current_tick = 1
       end
 
 
@@ -186,9 +184,7 @@ local function Meadowphysics ()
     if (mp.grid_mode == "rule" and z == 1) then
       if x > 8 and y > 1 and y < 8 then
         local rules = {"increment", "decrement", "min", "max", "random", "pole", "stop"}
-        print("set rule", rules[y-1], " for voice", mp.grid_target_focus)
         params:set(mp.grid_target_focus .. "_rule", y-1)
-        print(mp.grid_target_focus, "_rule", y-1)
       end
     end
 

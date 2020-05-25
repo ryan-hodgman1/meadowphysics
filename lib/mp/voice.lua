@@ -121,11 +121,10 @@ create_voice = function(i, mp)
       v.current_step = v.current_step - 1
     end
 
-    if (v.current_step == 0) then
-      v.current_step = v.current_cycle_length
-    end
+    if v.current_step == 0 then set("running", 1) end
 
-    if v.current_tick == 0 and v.current_step == v.current_cycle_length and not v.just_triggered then
+
+    if v.current_tick == 0 and v.current_step == 0 then
       for i=1, mp.voice_count do
         if get("reset_" .. i) == 2 then
           local voice = mp.voices[i]
@@ -140,7 +139,6 @@ create_voice = function(i, mp)
     end
 
     v.current_tick = v.current_tick + 1
-    v.just_triggered = false
 
   end
 
@@ -211,9 +209,10 @@ create_voice = function(i, mp)
     end
     if rule == "random" then
       local delta = get("range_high") - get("range_low")
-      v.current_cycle_length = get("range_low") + math.random(delta)
+      print(delta)
+      if delta > 0 then v.current_cycle_length = get("range_low")-1 + math.random(delta+1) end
       local div_delta = get("clock_division_high") - get("clock_division_low")
-      v.current_clock_division = get("clock_division_low") + math.random(div_delta)
+      if div_delta > 0 then v.current_clock_division = get("clock_division_low")-1 + math.random(div_delta+1) end
     end
     if rule == "pole" then
       if v.current_cycle_length == get("range_high") then
