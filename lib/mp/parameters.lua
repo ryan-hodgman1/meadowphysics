@@ -5,7 +5,23 @@ setup_params = function(mp)
     type = "option",
     id = "output",
     name = "output",
-    options = {"audio", "midi", "audio + midi"}
+    options = {
+      "audio", "midi", "audio + midi",
+      "crow out (tbc)", "crow JF notes", "crow JF trigs"
+    },
+    action = function(value)
+      mp.all_notes_off()
+      if value == 4 then
+        crow.ii.pullup(true)
+        crow.output[2].action = "{to(5,0),to(0,0.25)}"
+      elseif value == 5 then
+        crow.ii.pullup(true)
+        crow.ii.jf.mode(1)
+      elseif value == 6 then
+        crow.ii.pullup(true)
+        crow.ii.jf.mode(0)
+      end
+    end
   }
 
   params:add{

@@ -125,7 +125,6 @@ create_voice = function(i, mp)
       for i=1, mp.voice_count do
         local voice = mp.voices[i]
         if get("reset_" .. i) == 2 then
-          print("reset", i)
           voice.current_step = voice.current_cycle_length
           voice.set("running", 2)
           voice.current_tick = 0
@@ -207,7 +206,6 @@ create_voice = function(i, mp)
     end
     if rule == "random" then
       local delta = get("range_high") - get("range_low")
-      print(delta)
       if delta > 0 then v.current_cycle_length = get("range_low")-1 + math.random(delta+1) end
       local div_delta = get("clock_division_high") - get("clock_division_low")
       if div_delta > 0 then v.current_clock_division = get("clock_division_low")-1 + math.random(div_delta+1) end

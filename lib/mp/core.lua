@@ -36,12 +36,25 @@ local function Meadowphysics ()
         
         -- If the voice type is a trigger
         if params:get(i .. "_type") == 1 then
+
           if (params:get('output') == 1 or params:get('output') == 3) then
             trigger(note_num, hz, i) -- global defined by main script
           end
           if (params:get('output') == 2 or params:get('output') == 3) then
             midi_note_on(i)
           end
+
+          if params:get('output') == 5 then
+            crow.ii.jf.play_note((note_num-60) / 12, 5 )
+          end
+
+          if params:get('output') == 6 then
+            print("trigger", voice.index)
+            -- crow.ii.jf.play_note((note_num-60) / 12,1)
+            -- crow.ii.jf.play_voice( voice.index-1, (note_num-60) / 12, 5 )
+            crow.ii.jf.vtrigger( voice.index, 8)
+          end
+
         end
         
         -- If the voice type is a gate
@@ -86,7 +99,7 @@ local function Meadowphysics ()
 
   notes = {}
 
-  function midi_notes_off()
+  function mp.all_notes_off()
     for i = 1, mp.voice_count do
       if (params:get(i.."_type") == 1) then midi_note_off(i) end
     end
@@ -96,7 +109,7 @@ local function Meadowphysics ()
     while true do
       clock.sync(1/(params:get("clock_division")*4))
       if (params:get('output') == 2 or params:get('output') == 3 and false) then
-        midi_notes_off()
+        mp.all_notes_off()
       end
       mp.handle_tick()
     end
