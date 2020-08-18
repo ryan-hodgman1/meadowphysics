@@ -105,13 +105,22 @@ local function Meadowphysics ()
 
   -- Clock Loop
   function mp:handle_tick()
-    mp.trigger_queue = {}
 
-
+    -- triggers
     for i=1,mp.voice_count do
-      voices[i].tick()
+      if voices[i].current_tick == voices[1].current_clock_division and voices[i].current_step == 1  then
+        voices[i].bang()
+      end
     end
 
+    -- resets
+    for i=1,mp.voice_count do
+      voices[i].apply_resets()
+    end
+
+    for i=1,mp.voice_count do
+      voices[i].current_tick = voices[i].current_tick+1
+    end
 
     mp:gridredraw()
   end

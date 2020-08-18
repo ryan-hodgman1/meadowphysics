@@ -108,14 +108,9 @@ create_voice = function(i, mp)
     end
   end
 
-  v.tick = function()
-    -- Clock hits this function for every tick, the clock multiplication affects the amount of ticks
-    -- per step, when current_tick hits 0, the current step will step down towards zero.
-    -- when it hits zero it resets to a step value determined by it's rule, and emits a bang
+  v.apply_resets = function()
 
     if not v.isRunning() then return end
-
-    v.should_bang = false
 
     -- Reset tick clock and advance step (toward zero) when hitting the clock division
     if (v.current_tick == v.current_clock_division) then
@@ -123,39 +118,25 @@ create_voice = function(i, mp)
       v.current_step = v.current_step - 1
     end
 
-    if v.current_step == 0 then set("running", 1) end
-
-
-
+    -- if v.current_tick == 0 and v.current_step == 0 then
     if v.current_tick == 0 and v.current_step == 0 then
-      v.should_bang = true
-
-      v.bang()
-      v.current_step = v.current_cycle_length
-      params:set(v.index .. "_running", 1)
+      set("running", 1)
 
       for i=1, mp.voice_count do
         local voice = mp.voices[i]
         if get("reset_" .. i) == 2 then
-          if  i == v.index then
-            v.current_step = v.current_cycle_length
-          else
-            -- This it a bit magic, if trigger-on-reset is true, then just play the note.
-            -- Otherwise play it from step 1, becuase it hasn't made it to step 0 yet.
-            if params:get("trigger_on_reset") == 2 or (voice.current_step == 1 and voice.index > v.index) then
-              voice.bang() 
-            end 
-            voice.current_tick = 0
-          end
-            voice.apply_rule(rules[get("rule")])
-            voice.current_step = voice.current_cycle_length
-            params:set(voice.index .. "_running", 2)
+          print("reset", i)
+          voice.current_step = voice.current_cycle_length
+          voice.set("running", 2)
+          voice.current_tick = 0
+          voice.apply_rule(rules[voice.get("rule")])
+          if params:get("trigger_on_reset") == 2 and not (voice.index == v.index) then
+            voice.bang() 
+          end 
         end
       end
 
     end
-
-    v.current_tick = v.current_tick + 1
 
   end
 
