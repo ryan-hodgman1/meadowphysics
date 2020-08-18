@@ -37,6 +37,23 @@ setup_params = function(mp)
     options = {"1/4", "1/8", "1/12", "1/16"}
   }
 
+
+  params:add {
+    type = "option",
+    id = "instant_trigger",
+    name = "trigger on press",
+    options = {"no", "yes"}
+  }
+
+
+  params:add {
+    type = "option",
+    id = "trigger_on_reset",
+    name = "trigger on reset",
+    options = {"no", "yes"}
+  }
+
+
   params:add_separator()
 
 end

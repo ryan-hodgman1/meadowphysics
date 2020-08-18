@@ -102,12 +102,22 @@ local function Meadowphysics ()
     end
   end
 
+
+  -- Clock Loop
   function mp:handle_tick()
+    mp.trigger_queue = {}
+
+
     for i=1,mp.voice_count do
       voices[i].tick()
     end
+
+
     mp:gridredraw()
   end
+
+
+
 
   function mp:handle_key (n, z)
 
@@ -151,7 +161,7 @@ local function Meadowphysics ()
         mp.voices[y].toggle_playback()
       end
 
-      if (x == 4) then -- this is buggy!
+      if (x == 4) then
         mp.voices[mp.grid_target_focus].toggle_target(y)
       end
 
@@ -204,8 +214,10 @@ local function Meadowphysics ()
         params:set(y .. "_range_high", pressed_keys[#pressed_keys])
       end
       if (#pressed_keys == 1) then -- Single press in pattern mode
-        voices[y].bang()
-        voices[y].just_triggered = true
+        if params:get("instant_trigger") == 2 then
+          -- do instant event
+          voices[y].bang()
+        end
         voices[y].current_step = x
         voices[y].current_tick = 0
         voices[y].current_cycle_length = x
